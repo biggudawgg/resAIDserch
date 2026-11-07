@@ -1,4 +1,4 @@
-# Technical Literature Scout (Hindsight)
+# Technical Literature Scout 
 
 🔬 **Autonomous AI Research Agent for Engineering Teams**
 
