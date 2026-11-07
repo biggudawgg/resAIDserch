@@ -41,7 +41,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { 'Content-Type': 'application/json', ...init?.headers },
     })
   } catch {
-    throw new ApiError("Can't reach the Hindsight API. Start it with: python demo_server.py", 0)
+    throw new ApiError("Can't reach the resAIDserch API. Start it with: python demo_server.py", 0)
   }
   if (!response.ok) {
     let message = `Request failed (${response.status})`

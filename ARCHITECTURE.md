@@ -1,4 +1,4 @@
-# Hindsight (resAIDserch) - Architecture in plain English
+# resAIDserch - Architecture in plain English
 
 **What it is:** a research assistant for a small engineering team. You ask a technical question, an AI agent reads papers and drafts an answer, and your team approves what goes into shared memory.
 

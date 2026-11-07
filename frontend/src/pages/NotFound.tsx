@@ -8,7 +8,7 @@ export function NotFound() {
       <EmptyState
         icon={<Compass />}
         title="Page not found"
-        description="That address doesn't match anything in Hindsight."
+        description="That address doesn't match anything in resAIDserch."
         action={
           <Link className="btn btn-primary btn-md" to="/">
             Back to overview

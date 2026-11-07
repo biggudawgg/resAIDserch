@@ -67,7 +67,7 @@ export function Sidebar() {
       <Link to="/" className="sidebar-brand">
         <Logo />
         <span className="brand-text">
-          <span className="brand-name">Hindsight</span>
+          <span className="brand-name">resAIDserch</span>
           <span className="brand-sub">Literature scout</span>
         </span>
       </Link>

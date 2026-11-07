@@ -35,7 +35,7 @@ export function AppShell() {
           <div className="api-banner" role="alert">
             <ServerCrash aria-hidden />
             <span>
-              <strong>Can't reach the Hindsight API.</strong> Start it with <code>python demo_server.py</code> in the backend
+              <strong>Can't reach the resAIDserch API.</strong> Start it with <code>python demo_server.py</code> in the backend
               folder.
             </span>
             <Button size="sm" icon={<RefreshCw />} onClick={() => workspace.refetch()}>

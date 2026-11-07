@@ -63,7 +63,7 @@ export function Meetings() {
         <EmptyState
           icon={<Users />}
           title="No meetings yet"
-          description="Paste a transcript and Hindsight extracts each person's position on the topics you discussed."
+          description="Paste a transcript and resAIDserch extracts each person's position on the topics you discussed."
           action={
             <Button variant="primary" icon={<Plus />} onClick={() => setNewOpen(true)}>
               Add transcript

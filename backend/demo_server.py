@@ -1,4 +1,4 @@
-"""Hindsight demo API.
+"""resAIDserch demo API.
 
 An in-memory workspace that powers the frontend without a database or API keys.
 Paper search calls the real arXiv API; the LLM steps (claims, contradictions,
@@ -31,7 +31,7 @@ from pydantic import BaseModel, Field
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 STEP_SECONDS = float(os.getenv("DEMO_STEP_SECONDS", "1.6"))
 ARXIV_API = "https://export.arxiv.org/api/query"
-USER_AGENT = "hindsight-demo/0.1"
+USER_AGENT = "resaidserch-demo/0.1"
 CURRENT_USER = "m_you"
 
 ProviderId = Literal["claude", "openai", "groq", "custom"]
@@ -1541,8 +1541,8 @@ class MemberPatch(BaseModel):
 
 # --------------------------------------------------------------------------- app
 
-app = FastAPI(title="Hindsight demo API", version="0.2.0",
-              description="In-memory demo backend for the Hindsight literature scout.")
+app = FastAPI(title="resAIDserch demo API", version="0.2.0",
+              description="In-memory demo backend for the resAIDserch literature scout.")
 app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")],
                    allow_methods=["*"], allow_headers=["*"])
 

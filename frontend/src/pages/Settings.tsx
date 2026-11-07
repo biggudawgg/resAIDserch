@@ -394,7 +394,7 @@ function DataRetention({ ws }: { ws: Workspace }) {
       const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }))
       const link = document.createElement('a')
       link.href = url
-      link.download = `hindsight-export-${new Date().toISOString().slice(0, 10)}.json`
+      link.download = `resaidserch-export-${new Date().toISOString().slice(0, 10)}.json`
       link.click()
       URL.revokeObjectURL(url)
       toast('Workspace export downloaded')
