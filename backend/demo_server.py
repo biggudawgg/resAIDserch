@@ -2158,11 +2158,11 @@ def search(q: str = Query("", max_length=200)) -> list[dict]:
 
 
 # --------------------------------------------------------------------------- persistence
-# With DATABASE_URL set (Postgres / AlloyDB) the whole workspace is snapshotted to one JSON row after every
+# With HINDSIGHT_DATABASE_URL set (Postgres / AlloyDB) the whole workspace is snapshotted to one JSON row after every
 # write and reloaded on boot (json, not jsonb: jsonb reorders keys, which reshuffles list endpoints). Without it the server stays purely in-memory. Run a single instance: state is
 # held in-process, so two instances would overwrite each other's snapshots.
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
+DATABASE_URL = os.getenv("HINDSIGHT_DATABASE_URL", "")  # dedicated name so a shell's generic DATABASE_URL is never picked up
 _engine: Any = None
 _persist_lock = threading.Lock()
 

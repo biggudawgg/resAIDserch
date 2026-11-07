@@ -68,7 +68,7 @@ Light, dark and phone versions are all in [pics/](pics/).
 
 `backend/demo_server.py` is the API the screens use (about 39 endpoints). It is what the container runs.
 
-- **Saved data:** with `DATABASE_URL` set (AlloyDB / Postgres) the whole workspace is saved to the database after every change and reloaded on start. Without it, data lives in memory only.
+- **Saved data:** with `HINDSIGHT_DATABASE_URL` set (AlloyDB / Postgres) the whole workspace is saved to the database after every change and reloaded on start. Without it, data lives in memory only.
 - **Real:** paper search (live arXiv), exact quotes from abstracts, adding papers by arXiv ID, provider key tests, routing rules, budgets, members.
 - **Not real yet:** the AI steps (claims, conflicts, confidence, dead ends, briefing) are labelled heuristics; calling the models themselves is not wired in.
 - **One instance only:** state is held in the process, so Cloud Run is set to exactly one always-on instance.

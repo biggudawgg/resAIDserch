@@ -162,7 +162,7 @@ gcloud run deploy lit-scout-backend \
   --timeout=900 \
   --set-cloudsql-instances=YOUR_GCP_PROJECT_ID:us-central1:lit-scout-primary \
   --set-env-vars="ENVIRONMENT=production,DEBUG=False" \
-  --update-secrets="DATABASE_URL=lit-scout-db-url:latest,ANTHROPIC_API_KEY=lit-scout-anthropic-key:latest,GROQ_API_KEY=lit-scout-groq-key:latest" \
+  --update-secrets="HINDSIGHT_DATABASE_URL=lit-scout-db-url:latest,ANTHROPIC_API_KEY=lit-scout-anthropic-key:latest,GROQ_API_KEY=lit-scout-groq-key:latest" \
   --project=YOUR_GCP_PROJECT_ID
 ```
 

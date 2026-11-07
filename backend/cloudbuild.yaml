@@ -39,7 +39,7 @@ steps:
       - '--max-instances=1'
       - '--no-cpu-throttling'
       - '--set-env-vars=ENVIRONMENT=production'
-      - '--update-secrets=DATABASE_URL=lit-scout-db-url:latest,GROQ_API_KEY=lit-scout-groq-key:latest,OPENAI_API_KEY=lit-scout-openai-key:latest'
+      - '--update-secrets=HINDSIGHT_DATABASE_URL=lit-scout-db-url:latest,GROQ_API_KEY=lit-scout-groq-key:latest,OPENAI_API_KEY=lit-scout-openai-key:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
