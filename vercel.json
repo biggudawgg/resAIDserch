@@ -1,0 +1,21 @@
+{
+  "buildCommand": "cd frontend && npm install && npm run build",
+  "installCommand": "npm install -g pnpm && pnpm install --recursive",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "env": {
+    "VITE_API_URL": "@api_url"
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "regions": ["sfo1"],
+  "functions": {
+    "frontend/**/*.ts": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
+}
