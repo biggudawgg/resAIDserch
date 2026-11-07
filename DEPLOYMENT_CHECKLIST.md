@@ -2,8 +2,8 @@
 
 ✅ **Completed for Production Deployment to Google Cloud + Vercel**
 
-**Project Name:** resAIDserch  
-**GitHub:** https://github.com/biggudawgg/resAIDserch
+**Project Name:** resAIDerch  
+**GitHub:** https://github.com/biggudawgg/resAIDerch
 
 ---
 

@@ -194,15 +194,15 @@ class AIProviderRouter:
 
     def __init__(
         self,
-        claude_api_key: str,
-        groq_api_key: str,
+        claude_api_key: Optional[str] = None,
+        groq_api_key: Optional[str] = None,
         openai_api_key: Optional[str] = None,
     ):
-        self.providers = {
-            "claude": ClaudeAdapter(claude_api_key),
-            "groq": GroqAdapter(groq_api_key),
-        }
-
+        self.providers = {}
+        if claude_api_key:
+            self.providers["claude"] = ClaudeAdapter(claude_api_key)
+        if groq_api_key:
+            self.providers["groq"] = GroqAdapter(groq_api_key)
         if openai_api_key:
             self.providers["openai"] = OpenAIAdapter(openai_api_key)
 
@@ -224,18 +224,17 @@ class AIProviderRouter:
     ) -> str:
         """Select best provider for task based on requirements."""
 
+        if not self.providers:
+            raise RuntimeError("No AI provider keys configured")
+
         primary, fallback = self.task_routing.get(task_type, ("claude", "groq"))
 
-        # Check if primary is available
-        if await self.providers[primary].is_available():
-            return primary
+        for name in (primary, fallback):
+            if name in self.providers and await self.providers[name].is_available():
+                return name
 
-        # Fallback
-        if fallback in self.providers and await self.providers[fallback].is_available():
-            return fallback
-
-        # Last resort
-        return "claude"
+        # Last resort: any configured provider
+        return next(iter(self.providers))
 
     async def execute_task(
         self,

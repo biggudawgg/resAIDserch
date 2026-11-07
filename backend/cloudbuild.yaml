@@ -1,11 +1,7 @@
+# Cloud Build pipeline: build the backend image and deploy it to Cloud Run.
+# Triggered by pushes to master on github.com/biggudawgg/resAIDerch.
 steps:
-  # Step 1: Install dependencies and run tests
-  - name: 'python:3.11'
-    entrypoint: pip
-    args: ['install', '-r', 'requirements.txt']
-    dir: 'backend'
-
-  # Step 2: Build the Docker image
+  # Step 1: Build the Docker image
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'build'
@@ -16,47 +12,30 @@ steps:
       - '.'
     dir: 'backend'
 
-  # Step 3: Push the image to Container Registry
+  # Step 2: Push the image
   - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
+    args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/resaiderch-backend']
 
-  # Step 4: Deploy to Cloud Run
-  - name: 'gcr.io/cloud-builders/gke-deploy'
-    args:
-      - run
-      - '--filename=.'
-      - '--image=gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
-      - '--location=us-central1'
-      - '--output=/workspace/output'
-
-  # Step 5: Deploy to Cloud Run using gcloud
+  # Step 3: Deploy to Cloud Run
+  # Database is AlloyDB (private IP), reached via the DATABASE_URL secret.
+  # Add --network/--subnet (Direct VPC egress) here once the VPC is set up.
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
       - 'deploy'
       - 'lit-scout-backend'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
-      - '--platform'
-      - 'managed'
-      - '--region'
-      - 'us-central1'
+      - '--image=gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--port=8000'
       - '--allow-unauthenticated'
-      - '--cpu'
-      - '2'
-      - '--memory'
-      - '2Gi'
-      - '--timeout'
-      - '900'
-      - '--update-env-vars'
-      - 'ENVIRONMENT=production'
-      - '--set-cloudsql-instances'
-      - '${PROJECT_ID}:us-central1:lit-scout-db'
+      - '--cpu=2'
+      - '--memory=2Gi'
+      - '--timeout=900'
+      - '--set-env-vars=ENVIRONMENT=production,DEBUG=False'
+      - '--update-secrets=DATABASE_URL=lit-scout-db-url:latest,ANTHROPIC_API_KEY=lit-scout-anthropic-key:latest,GROQ_API_KEY=lit-scout-groq-key:latest'
 
-images:
-  - 'gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
-  - 'gcr.io/$PROJECT_ID/resaiderch-backend:latest'
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 timeout: '1800s'

@@ -124,9 +124,19 @@ gcloud services enable cloudbuild.googleapis.com \
 
 ### Step 4: Deploy Using Cloud Build
 
+`gcloud run deploy --source` cannot take a GitHub URL; deploy from GitHub with a Cloud Build trigger.
+
+**One-time trigger setup (deploys on every push to `master`):**
+
+1. Cloud Console → Cloud Build → Triggers → *Connect repository* → GitHub → `biggudawgg/resAIDerch`.
+2. Create trigger: event *Push to a branch*, branch `^master$`, configuration *Cloud Build configuration file* = `backend/cloudbuild.yaml`, included files `backend/**`.
+3. Grant the Cloud Build service account: Cloud Run Admin, Service Account User, Secret Manager Secret Accessor.
+4. Create the secrets referenced by `cloudbuild.yaml` (Step 5 below): `lit-scout-db-url`, `lit-scout-anthropic-key`, `lit-scout-groq-key`.
+
+**Test the pipeline manually first** (run from the repo root):
+
 ```bash
-# Deploy from repository
-gcloud builds submit \
+gcloud builds submit . \
   --config=backend/cloudbuild.yaml \
   --project=YOUR_GCP_PROJECT_ID
 ```
@@ -190,7 +200,7 @@ Save this URL - you'll need it for the frontend configuration.
 
 1. Go to [vercel.com](https://vercel.com)
 2. Click "Add New..." → "Project"
-3. Select your GitHub repository: `https://github.com/biggudawgg/resAIDserch`
+3. Select your GitHub repository: `https://github.com/biggudawgg/resAIDerch`
 4. Click "Import"
 
 ### Step 2: Configure Environment Variables in Vercel
@@ -198,18 +208,13 @@ Save this URL - you'll need it for the frontend configuration.
 1. In Vercel project settings → "Environment Variables"
 2. Add the backend URL:
    ```
-   VITE_API_URL=https://YOUR_CLOUD_RUN_URL.run.app
+   VITE_API_URL=https://YOUR_CLOUD_RUN_URL.run.app/api
    ```
    (Replace with the URL from Step 6 above)
 
 ### Step 3: Configure Build Settings
 
-In Vercel project settings:
-
-- **Root Directory:** `frontend`
-- **Build Command:** `npm run build`
-- **Output Directory:** `dist`
-- **Install Command:** `npm install`
+Leave Root Directory as the repo root. The root `vercel.json` already sets the install command, build command, output directory (`frontend/dist`) and the rewrite that makes deep links work.
 
 ### Step 4: Deploy
 
