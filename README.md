@@ -142,30 +142,6 @@ POST   /api/beliefs/teams/{team_id}/beliefs
 
 **Retention:** Keep until `project_end_date + 3 months`, then auto-delete (GDPR compliant)
 
-## 🌩️ Deployment (Google Cloud)
-
-### Production Setup
-```bash
-# 1. Cloud Run
-gcloud run deploy lit-scout-api \
-  --source ./backend \
-  --platform managed \
-  --region us-central1
-
-# 2. AlloyDB
-gcloud alloydb clusters create lit-scout-prod \
-  --region us-central1
-
-# 3. Frontend on Vercel
-vercel deploy --prod
-```
-
-### Cost Estimation
-- AlloyDB HA: ~$0.50/hour (~$360/month)
-- Cloud Run: Pay per request (~$50-200/month)
-- Cloud Storage: ~$0.02/GB (~$10/month)
-- **Total:** ~$420-550/month for small team
-
 ## 📊 Usage Tray (UI)
 
 Bottom bar shows in real-time:
@@ -180,37 +156,6 @@ Current: Groq | Tokens: 1,240 in / 340 out | ~$0.0001 | Session: $0.002
 - **Data**: TLS in transit, encrypted at rest
 - **Access**: Role-based (lead, researcher, engineer, viewer)
 - **Audit**: All actions logged
-
-## 📝 Implementation Phases
-
-### Phase 1 (Week 1-2): Core Research Agent
-- Q tracker, ArXiv search, PDF extraction
-- Claim extraction, AI routing, usage tray
-- Basic findings dashboard
-
-### Phase 2 (Week 3-4): Intelligence & Loop
-- Contradiction detection, dead-end proposals
-- Confidence scoring, weekly background watch
-- Findings approval workflow
-
-### Phase 3 (Week 5+): Team Collaboration
-- Meeting transcription & stance extraction
-- Memory timelines, briefing generation
-- Exports to Google Docs
-
-## 🚀 Next Steps
-
-1. Set up API keys in `.env`
-2. Run `docker-compose up`
-3. Visit http://localhost:5173
-4. Create a team and post your first research question
-5. Watch the AI research 🤖
-
-## 📧 Support
-
-- API Docs: http://localhost:8000/docs
-- Issues: GitHub Issues
-- Feedback: Email
 
 ## 📄 License
 
