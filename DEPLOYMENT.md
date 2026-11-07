@@ -128,7 +128,7 @@ gcloud services enable cloudbuild.googleapis.com \
 
 **One-time trigger setup (deploys on every push to `master`):**
 
-1. Cloud Console → Cloud Build → Triggers → *Connect repository* → GitHub → `biggudawgg/resAIDerch`.
+1. Cloud Console → Cloud Build → Triggers → *Connect repository* → GitHub → `biggudawgg/resAIDserch`.
 2. Create trigger: event *Push to a branch*, branch `^master$`, configuration *Cloud Build configuration file* = `backend/cloudbuild.yaml`, included files `backend/**`.
 3. Grant the Cloud Build service account: Cloud Run Admin, Service Account User, Secret Manager Secret Accessor.
 4. Create the secrets referenced by `cloudbuild.yaml` (Step 5 below): `lit-scout-db-url`, `lit-scout-anthropic-key`, `lit-scout-groq-key`.
@@ -200,7 +200,7 @@ Save this URL - you'll need it for the frontend configuration.
 
 1. Go to [vercel.com](https://vercel.com)
 2. Click "Add New..." → "Project"
-3. Select your GitHub repository: `https://github.com/biggudawgg/resAIDerch`
+3. Select your GitHub repository: `https://github.com/biggudawgg/resAIDserch`
 4. Click "Import"
 
 ### Step 2: Configure Environment Variables in Vercel

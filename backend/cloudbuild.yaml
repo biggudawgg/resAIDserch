@@ -17,7 +17,9 @@ steps:
     args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/resaiderch-backend']
 
   # Step 3: Deploy to Cloud Run
-  # Database is AlloyDB (private IP), reached through Direct VPC egress; created by infrastructure/alloydb-setup.sh.
+  # Quick-deploy config: in-memory state, private service (grant allUsers invoker manually to expose it).
+  # For persistence, add Direct VPC egress (--network/--subnet/--vpc-egress=private-ranges-only) and
+  # --update-secrets=HINDSIGHT_DATABASE_URL=lit-scout-db-url:latest (see infrastructure/alloydb-setup.sh).
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'run'
@@ -27,19 +29,15 @@ steps:
       - '--platform=managed'
       - '--region=us-central1'
       - '--port=8000'
-      - '--allow-unauthenticated'
+      - '--no-allow-unauthenticated'
       - '--cpu=2'
       - '--memory=2Gi'
       - '--timeout=900'
-      # State is held in-process and snapshotted to the database, so exactly one always-on instance.
-      - '--network=lit-scout-network'
-      - '--subnet=lit-scout-subnet'
-      - '--vpc-egress=private-ranges-only'
+      # State is held in-process, so exactly one always-on instance.
       - '--min-instances=1'
       - '--max-instances=1'
       - '--no-cpu-throttling'
       - '--set-env-vars=ENVIRONMENT=production'
-      - '--update-secrets=HINDSIGHT_DATABASE_URL=lit-scout-db-url:latest,GROQ_API_KEY=lit-scout-groq-key:latest,OPENAI_API_KEY=lit-scout-openai-key:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
