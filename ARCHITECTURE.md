@@ -64,17 +64,16 @@ Nothing enters team memory without a person approving it. Each step can use a di
 
 Light, dark and phone versions are all in [pics/](pics/).
 
-## Two backends (important)
+## The backend, and what is real
 
-The repo contains two backends:
+`backend/demo_server.py` is the API the screens use (about 39 endpoints). It is what the container runs.
 
-| | `backend/demo_server.py` | `backend/app/` |
-|---|---|---|
-| Data stored in | memory (resets on restart) | Postgres / AlloyDB |
-| AI steps | labelled heuristics (arXiv search is real) | real provider adapters |
-| API the screens use | **yes, all of it** | **no, different routes** |
+- **Saved data:** with `DATABASE_URL` set (AlloyDB / Postgres) the whole workspace is saved to the database after every change and reloaded on start. Without it, data lives in memory only.
+- **Real:** paper search (live arXiv), exact quotes from abstracts, adding papers by arXiv ID, provider key tests, routing rules, budgets, members.
+- **Not real yet:** the AI steps (claims, conflicts, confidence, dead ends, briefing) are labelled heuristics; calling the models themselves is not wired in.
+- **One instance only:** state is held in the process, so Cloud Run is set to exactly one always-on instance.
 
-The screens call endpoints like `/api/overview`, `/api/questions`, `/api/beliefs`. Only the demo server has them. `backend/app/` has its own routes (`/api/questions/teams/{id}/...`) and the screens cannot use them yet. Closing that gap is the main remaining job before a real deployment.
+`backend/app/` is an older, separate API with its own routes (`/api/questions/teams/{id}/...`). The screens do not use it.
 
 ## Where it runs
 

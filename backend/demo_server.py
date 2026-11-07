@@ -8,6 +8,7 @@ provider execution is wired in.
     python demo_server.py          # http://127.0.0.1:8001  (API docs at /docs)
 """
 import calendar
+import json
 import os
 import random
 import re
@@ -595,6 +596,7 @@ def fail_run(rid: str, index: int, message: str) -> None:
             q["updatedAt"] = now()
             log_activity("run_failed", f"couldn't finish research on “{clip(q['question'], 70)}”: {message}",
                          link={"type": "question", "id": q["id"]})
+    persist()
 
 
 def execute_run(rid: str, canned: Optional[dict], step_seconds: float) -> None:
@@ -639,6 +641,7 @@ def execute_run(rid: str, canned: Optional[dict], step_seconds: float) -> None:
                          question_id=question["id"], mode="sample" if canned else "demo", reason=step["routeReason"])
     with LOCK:
         finalize(rid, ctx)
+    persist()
 
 
 def finalize(rid: str, ctx: dict) -> None:
@@ -1540,7 +1543,8 @@ class MemberPatch(BaseModel):
 
 app = FastAPI(title="Hindsight demo API", version="0.2.0",
               description="In-memory demo backend for the Hindsight literature scout.")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")],
+                   allow_methods=["*"], allow_headers=["*"])
 
 
 def get_or_404(table: str, key: str, label: str) -> dict:
@@ -2153,8 +2157,100 @@ def search(q: str = Query("", max_length=200)) -> list[dict]:
         return results
 
 
-with LOCK:
-    seed()
+# --------------------------------------------------------------------------- persistence
+# With DATABASE_URL set (Postgres / AlloyDB) the whole workspace is snapshotted to one JSON row after every
+# write and reloaded on boot (json, not jsonb: jsonb reorders keys, which reshuffles list endpoints). Without it the server stays purely in-memory. Run a single instance: state is
+# held in-process, so two instances would overwrite each other's snapshots.
+
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+_engine: Any = None
+_persist_lock = threading.Lock()
+
+
+def _encode(obj: Any) -> Any:
+    if isinstance(obj, datetime):
+        return {"__dt__": obj.isoformat()}
+    if isinstance(obj, date):
+        return {"__d__": obj.isoformat()}
+    if isinstance(obj, (set, frozenset)):
+        return {"__set__": sorted(obj)}
+    raise TypeError(f"Cannot persist {type(obj).__name__}")
+
+
+def _decode(obj: dict) -> Any:
+    if "__dt__" in obj:
+        return datetime.fromisoformat(obj["__dt__"])
+    if "__d__" in obj:
+        return date.fromisoformat(obj["__d__"])
+    if "__set__" in obj:
+        return set(obj["__set__"])
+    return obj
+
+
+def _get_engine() -> Any:
+    global _engine
+    if _engine is None and DATABASE_URL:
+        from sqlalchemy import create_engine, text
+
+        url = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+        _engine = create_engine(url, pool_pre_ping=True)
+        with _engine.begin() as conn:
+            conn.execute(text("CREATE TABLE IF NOT EXISTS app_state (key TEXT PRIMARY KEY, data JSON NOT NULL, "
+                              "updated_at TIMESTAMPTZ NOT NULL DEFAULT now())"))
+    return _engine
+
+
+def persist() -> None:
+    engine = _get_engine()
+    if engine is None:
+        return
+    from sqlalchemy import text
+
+    try:
+        with _persist_lock:
+            with LOCK:
+                payload = json.dumps(DB, default=_encode)
+            with engine.begin() as conn:
+                conn.execute(text("INSERT INTO app_state (key, data) VALUES ('workspace', CAST(:d AS json)) "
+                                  "ON CONFLICT (key) DO UPDATE SET data = EXCLUDED.data, updated_at = now()"),
+                             {"d": payload})
+    except Exception as exc:  # a failed snapshot must never fail the request that triggered it
+        print(f"[persist] snapshot failed: {exc}", flush=True)
+
+
+@app.middleware("http")
+async def persist_after_write(request, call_next):
+    response = await call_next(request)
+    if request.method not in ("GET", "HEAD", "OPTIONS") and response.status_code < 400:
+        from starlette.concurrency import run_in_threadpool
+
+        await run_in_threadpool(persist)
+    return response
+
+
+def init_state() -> None:
+    engine = _get_engine()
+    row = None
+    if engine is not None:
+        from sqlalchemy import text
+
+        with engine.begin() as conn:
+            row = conn.execute(text("SELECT data::text FROM app_state WHERE key = 'workspace'")).fetchone()
+    with LOCK:
+        if row:
+            DB.clear()
+            DB.update(json.loads(row[0], object_hook=_decode))
+            load_env_keys()
+            for run in list(DB["runs"].values()):
+                if run["status"] == "running":
+                    index = next((i for i, s in enumerate(run["steps"]) if s["status"] != "done"), 0)
+                    fail_run(run["id"], index, "Interrupted by a server restart. Re-run the question.")
+        else:
+            seed()
+    persist()
+
+
+init_state()
 
 
 if __name__ == "__main__":
