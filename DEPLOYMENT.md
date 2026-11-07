@@ -190,7 +190,7 @@ Save this URL - you'll need it for the frontend configuration.
 
 1. Go to [vercel.com](https://vercel.com)
 2. Click "Add New..." → "Project"
-3. Select your GitHub repository with the lit-scout code
+3. Select your GitHub repository: `https://github.com/biggudawgg/resAIDserch`
 4. Click "Import"
 
 ### Step 2: Configure Environment Variables in Vercel

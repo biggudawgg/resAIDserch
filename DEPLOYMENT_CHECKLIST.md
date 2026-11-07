@@ -2,6 +2,9 @@
 
 ✅ **Completed for Production Deployment to Google Cloud + Vercel**
 
+**Project Name:** resAIDserch  
+**GitHub:** https://github.com/biggudawgg/resAIDserch
+
 ---
 
 ## Phase 1: Project Cleanup & Organization
