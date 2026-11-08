@@ -25,6 +25,7 @@ from typing import Any, Literal, Optional
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import PlainTextResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
@@ -1545,6 +1546,7 @@ app = FastAPI(title="resAIDserch demo API", version="0.2.0",
               description="In-memory demo backend for the resAIDserch literature scout.")
 app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in os.getenv("CORS_ORIGINS", "*").split(",")],
                    allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 
 
 def get_or_404(table: str, key: str, label: str) -> dict:

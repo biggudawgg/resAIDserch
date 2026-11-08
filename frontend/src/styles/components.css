@@ -10,7 +10,21 @@
   font-weight: 500;
   white-space: nowrap;
   text-decoration: none;
-  transition: background 0.12s, border-color 0.12s, color 0.12s, box-shadow 0.12s;
+  position: relative;
+  isolation: isolate;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.2s var(--ease-out),
+    transform 0.2s var(--ease-out), filter 0.15s;
+}
+.btn svg {
+  transition: transform 0.25s var(--ease-spring);
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.06s;
+}
+.btn-icon:hover:not(:disabled) svg {
+  transform: scale(1.1);
 }
 .btn-md {
   height: 36px;
@@ -40,12 +54,31 @@
   padding: 0;
 }
 .btn-primary {
-  background: var(--accent);
+  background-color: var(--accent);
+  background-image: var(--accent-grad);
   color: #fff;
-  box-shadow: 0 1px 2px rgba(20, 20, 60, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  box-shadow: var(--shadow-accent), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+/* A soft highlight that sweeps across primary buttons on hover. */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.24) 50%, transparent 65%) no-repeat;
+  background-size: 250% 100%;
+  background-position: 140% 0;
+  pointer-events: none;
+  transition: background-position 0.7s var(--ease-out);
 }
 .btn-primary:hover:not(:disabled) {
-  background: var(--accent-hover);
+  transform: translateY(-1px);
+  filter: brightness(1.06) saturate(1.05);
+  box-shadow: var(--shadow-accent-lg), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.btn-primary:hover:not(:disabled)::after {
+  background-position: -40% 0;
 }
 .btn-secondary {
   background: var(--surface);
@@ -56,6 +89,8 @@
 .btn-secondary:hover:not(:disabled) {
   background: var(--surface-hover);
   border-color: var(--border-strong);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 .btn-ghost {
   background: transparent;
@@ -71,6 +106,8 @@
 }
 .btn-danger:hover:not(:disabled) {
   background: var(--crit-hover);
+  box-shadow: 0 8px 20px -8px rgba(208, 59, 59, 0.55);
+  transform: translateY(-1px);
 }
 .btn-subtle {
   background: var(--accent-soft);
@@ -1092,11 +1129,12 @@ button.chip:hover {
   min-width: 0;
 }
 .stat-tile.is-link {
-  transition: border-color 0.12s, box-shadow 0.12s;
+  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .stat-tile.is-link:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-2px);
 }
 .stat-head {
   display: flex;

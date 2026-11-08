@@ -83,7 +83,7 @@ cp .env.example .env
 # Edit .env with your API keys
 
 # 5. Start FastAPI server
-python -m uvicorn app.main:app --reload
+python -m uvicorn demo_server:app --reload
 
 # Server runs on http://127.0.0.1:8000
 # API docs: http://127.0.0.1:8000/docs
@@ -265,7 +265,7 @@ After deploying to production:
 # If port 8000 is taken by old app:
 # Option 1: Stop old app and use 8000
 # Option 2: Run on different port:
-python -m uvicorn app.main:app --port 8001
+python -m uvicorn demo_server:app --port 8001
 ```
 
 ### Dependencies Not Installing

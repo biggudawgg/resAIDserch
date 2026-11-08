@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { RefreshCw, ServerCrash } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useWorkspace } from '../../api/hooks'
+import { warmAllRoutes } from '../../api/prefetch'
 import { cx } from '../../lib/cx'
 import { useHotkey } from '../../lib/hooks'
 import { useUI } from '../../lib/ui'
@@ -17,7 +19,9 @@ export function AppShell() {
   const location = useLocation()
   const { askOpen, closeAsk, paletteOpen, openPalette, closePalette } = useUI()
   const workspace = useWorkspace()
+  const queryClient = useQueryClient()
 
+  useEffect(() => warmAllRoutes(queryClient), [queryClient])
   useEffect(() => setNavOpen(false), [location.pathname])
   useEffect(() => window.scrollTo(0, 0), [location.pathname])
   useHotkey('k', useCallback(() => openPalette(), [openPalette]), { meta: true })

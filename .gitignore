@@ -1,29 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.pytest_cache/
+.coverage
+htmlcov/
+venv/
+env/
+
 # Backend
-backend/__pycache__/
-backend/*.py[cod]
-backend/*$py.class
-backend/*.so
-backend/.Python
-backend/env/
-backend/venv/
 backend/.env
 backend/.env.local
 backend/dist/
 backend/build/
-backend/*.egg-info/
-backend/.pytest_cache/
-backend/.coverage
-backend/htmlcov/
+
+# Local data and media
+*.db
+*.sqlite3
+video/
 
 # Frontend
 frontend/node_modules/
 frontend/dist/
 frontend/.env.local
 frontend/.env.*.local
-frontend/.DS_Store
+frontend/.vercel/
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
+.vercel/
 
 # IDE
 .vscode/
@@ -31,14 +39,10 @@ frontend/yarn-error.log*
 *.swp
 *.swo
 *~
-.DS_Store
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Docker
-.dockerignore
 
 # Logs
 *.log

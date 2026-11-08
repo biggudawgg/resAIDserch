@@ -214,7 +214,7 @@ Save this URL - you'll need it for the frontend configuration.
 
 ### Step 3: Configure Build Settings
 
-Leave Root Directory as the repo root. The root `vercel.json` already sets the install command, build command, output directory (`frontend/dist`) and the rewrite that makes deep links work.
+Set **Root Directory** to `frontend` (the repo root also contains the Python backend, which Vercel would otherwise try to build). `frontend/vercel.json` sets the Vite framework and the rewrite that makes deep links work; build and output settings are auto-detected.
 
 ### Step 4: Deploy
 

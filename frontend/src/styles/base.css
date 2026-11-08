@@ -20,7 +20,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: 'cv11', 'ss03';
+}
+
+::selection {
+  background: var(--accent-soft-2);
 }
 
 h1,

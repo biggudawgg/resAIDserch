@@ -17,7 +17,8 @@ steps:
     args: ['push', '--all-tags', 'gcr.io/$PROJECT_ID/resaiderch-backend']
 
   # Step 3: Deploy to Cloud Run
-  # Quick-deploy config: in-memory state, private service (grant allUsers invoker manually to expose it).
+  # Quick-deploy config: in-memory state. Region is Mumbai (closest to the team). Public access (allUsers invoker)
+  # is managed outside the pipeline, so deploys never change who can call the API.
   # For persistence, add Direct VPC egress (--network/--subnet/--vpc-egress=private-ranges-only) and
   # --update-secrets=HINDSIGHT_DATABASE_URL=lit-scout-db-url:latest (see infrastructure/alloydb-setup.sh).
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -27,9 +28,8 @@ steps:
       - 'lit-scout-backend'
       - '--image=gcr.io/$PROJECT_ID/resaiderch-backend:$COMMIT_SHA'
       - '--platform=managed'
-      - '--region=us-central1'
+      - '--region=asia-south1'
       - '--port=8000'
-      - '--no-allow-unauthenticated'
       - '--cpu=2'
       - '--memory=2Gi'
       - '--timeout=900'

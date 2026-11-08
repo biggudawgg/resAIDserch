@@ -168,11 +168,12 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: var(--shadow-xs);
-  transition: border-color 0.12s, box-shadow 0.12s;
+  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
 .qrow:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
 }
 .qrow-main {
   display: grid;

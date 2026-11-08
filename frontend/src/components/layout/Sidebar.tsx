@@ -1,4 +1,6 @@
 import { Link, NavLink } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
+import { prefetchRoute } from '../../api/prefetch'
 import { useMemberName, useOverview, useWorkspace } from '../../api/hooks'
 import type { ProviderStatus } from '../../api/types'
 import { cx } from '../../lib/cx'
@@ -21,6 +23,7 @@ const ROLE_TEXT = { lead: 'Lead', researcher: 'Researcher', engineer: 'Engineer'
 export function Sidebar() {
   const workspace = useWorkspace()
   const overview = useOverview()
+  const queryClient = useQueryClient()
   const nameOf = useMemberName()
   const ws = workspace.data
   const stats = overview.data?.stats
@@ -51,7 +54,13 @@ export function Sidebar() {
 
   const renderItem = (item: NavItem) => (
     <li key={item.to}>
-      <NavLink to={item.to} end={item.end} className={({ isActive }) => cx('nav-item', isActive && 'is-active')}>
+      <NavLink
+        to={item.to}
+        end={item.end}
+        className={({ isActive }) => cx('nav-item', isActive && 'is-active')}
+        onPointerEnter={() => prefetchRoute(queryClient, item.to)}
+        onFocus={() => prefetchRoute(queryClient, item.to)}
+      >
         <item.icon className="nav-icon" aria-hidden />
         <span className="nav-label">{item.label}</span>
         {badgeFor(item)}
