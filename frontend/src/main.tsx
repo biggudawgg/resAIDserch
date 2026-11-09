@@ -7,6 +7,7 @@ import '@fontsource-variable/source-serif-4'
 import '@fontsource/ibm-plex-mono/400.css'
 import '@fontsource/ibm-plex-mono/500.css'
 import { App } from './App'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import { ThemeProvider } from './lib/theme'
 import { UIProvider } from './lib/ui'
 import './styles/index.css'
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <UIProvider>
-            <App />
+            <ErrorBoundary>
+              <App />
+            </ErrorBoundary>
           </UIProvider>
         </BrowserRouter>
       </QueryClientProvider>

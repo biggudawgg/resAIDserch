@@ -7,6 +7,7 @@ import { warmAllRoutes } from '../../api/prefetch'
 import { cx } from '../../lib/cx'
 import { useHotkey } from '../../lib/hooks'
 import { useUI } from '../../lib/ui'
+import { ErrorBoundary } from '../ErrorBoundary'
 import { PaperDrawer } from '../papers/PaperDrawer'
 import { AskQuestionModal } from '../research/AskQuestionModal'
 import { Button } from '../ui/Button'
@@ -25,9 +26,16 @@ export function AppShell() {
   const workspace = useWorkspace()
   const queryClient = useQueryClient()
 
-  useEffect(() => warmAllRoutes(queryClient), [queryClient])
-  useEffect(() => setNavOpen(false), [location.pathname])
-  useEffect(() => window.scrollTo(0, 0), [location.pathname])
+  // Block bodies on purpose: an effect must return a cleanup function or nothing. Newer Chromium (e.g. Brave)
+  // makes window.scrollTo() return a Promise, and `() => window.scrollTo(0, 0)` handed that Promise to React as
+  // the cleanup, which crashed the whole app on the next navigation.
+  useEffect(() => {
+    warmAllRoutes(queryClient)
+  }, [queryClient])
+  useEffect(() => {
+    setNavOpen(false)
+    window.scrollTo(0, 0)
+  }, [location.pathname])
   useHotkey('k', useCallback(() => openPalette(), [openPalette]), { meta: true })
 
   return (
@@ -52,7 +60,9 @@ export function AppShell() {
           </div>
         )}
         <main id="main" className="content" tabIndex={-1}>
-          <Outlet />
+          <ErrorBoundary resetKey={location.pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
         <RouteLoader />
       </div>

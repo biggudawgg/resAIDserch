@@ -89,7 +89,9 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     return [...results, ...pages, ...actions]
   }, [query, debounced, search.data, navigate, onClose, openAsk, toggle])
 
-  useEffect(() => setActive(0), [items.length])
+  useEffect(() => {
+    setActive(0)
+  }, [items.length])
 
   if (!open) return null
 
