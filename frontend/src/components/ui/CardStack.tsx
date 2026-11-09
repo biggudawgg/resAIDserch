@@ -144,7 +144,7 @@ function clearance(w: number, h: number, ux: number, uy: number) {
 }
 
 function releaseVelocity(samples: Drag['samples']) {
-  const last = samples.at(-1)
+  const last = samples[samples.length - 1]
   const first = samples.find((sample) => last && last.t - sample.t <= VELOCITY_WINDOW)
   if (!(first && last) || last.t - first.t < 8) return { vx: 0, vy: 0 }
   const dt = last.t - first.t
@@ -315,7 +315,7 @@ export function CardStack({
   // The bottom card slips out to the left, swaps on top at its apex and lands as the new top card.
   const bringBack = useCallback(() => {
     const current = orderRef.current
-    const index = current.at(-1)
+    const index = current[current.length - 1]
     if (index === undefined || current.length < 2) return
     const body = bodies.current[index]
     const node = nodes.current[index]
