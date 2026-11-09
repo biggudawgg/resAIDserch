@@ -7,7 +7,7 @@ import { useTheme } from '../../lib/theme'
 import { useUI } from '../../lib/ui'
 import { Button, IconButton } from '../ui/Button'
 
-export function Topbar({ onMenu }: { onMenu: () => void }) {
+export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo: () => void }) {
   const { openAsk, openPalette } = useUI()
   const { theme, toggle } = useTheme()
   const workspace = useWorkspace()
@@ -22,14 +22,11 @@ export function Topbar({ onMenu }: { onMenu: () => void }) {
         <kbd className="kbd">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
       </button>
       <div className="topbar-right">
-        {workspace.data?.demo && (
-          <span
-            className="demo-pill"
-            title="Sample workspace. Paper search hits arXiv live; the LLM steps run as labelled heuristics until live model calls are wired in."
-          >
+        {workspace.data?.demo !== false && (
+          <button type="button" className="demo-pill" onClick={onDemoInfo} aria-label="About this demo" title="About this demo">
             <FlaskRound aria-hidden />
-            Demo workspace
-          </span>
+            <span className="demo-pill-text">Demo workspace</span>
+          </button>
         )}
         {routing.data && (
           <Link to="/providers" className="routing-pill" title="Provider routing policy">

@@ -1653,3 +1653,145 @@ button.chip:hover {
 .prose > :last-child {
   margin-bottom: 0;
 }
+
+/* Demo splash: shown on each new visit, reopened from the topbar "Demo workspace" pill. */
+.splash-overlay {
+  z-index: 80;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.splash {
+  max-width: 520px;
+  overflow: hidden;
+}
+.splash-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 26px 24px 20px;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 60%),
+    var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.splash-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: var(--warn-soft);
+  color: var(--warn-text);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+.splash-tag svg {
+  width: 13px;
+  height: 13px;
+}
+.splash-title {
+  font-size: 22px;
+  font-weight: 680;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+.splash-lead {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+/* Two classes: base.css resets ul[class] padding, which outranks a single class. */
+.splash .splash-points {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 20px 24px;
+  list-style: none;
+  overflow-y: auto;
+}
+.splash-point {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.splash-point-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+}
+.splash-point-icon svg {
+  width: 16px;
+  height: 16px;
+}
+.splash-point-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.splash-point-body {
+  margin-top: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.splash-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px 24px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface-2) 60%, var(--surface));
+}
+.splash-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 220px;
+  min-width: 0;
+  font-size: 12.5px;
+  color: var(--text-3);
+}
+.splash-status svg {
+  flex: none;
+  width: 15px;
+  height: 15px;
+}
+.splash-status-ok {
+  color: var(--good-text);
+}
+.splash-status-error {
+  color: var(--crit-text);
+}
+@media (max-width: 560px) {
+  .splash-overlay {
+    padding: 16px;
+  }
+  .splash-hero {
+    padding: 22px 18px 16px;
+  }
+  .splash-title {
+    font-size: 20px;
+  }
+  .splash .splash-points {
+    padding: 16px 18px;
+  }
+  .splash-footer {
+    padding: 12px 18px;
+  }
+  .splash-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -64,6 +64,7 @@ const send = <T>(method: string, path: string, body?: unknown) =>
   request<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) })
 
 export const api = {
+  health: () => get<{ status: string; mode: string; startedAt: string }>('/health'),
   workspace: () => get<Workspace>('/workspace'),
   overview: () => get<Overview>('/overview'),
 

@@ -11,11 +11,14 @@ import { PaperDrawer } from '../papers/PaperDrawer'
 import { AskQuestionModal } from '../research/AskQuestionModal'
 import { Button } from '../ui/Button'
 import { CommandPalette } from './CommandPalette'
+import { shouldShowDemoSplash } from '../../lib/demoSplash'
+import { DemoSplash } from './DemoSplash'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
 export function AppShell() {
   const [navOpen, setNavOpen] = useState(false)
+  const [splashOpen, setSplashOpen] = useState(shouldShowDemoSplash)
   const location = useLocation()
   const { askOpen, closeAsk, paletteOpen, openPalette, closePalette } = useUI()
   const workspace = useWorkspace()
@@ -34,7 +37,7 @@ export function AppShell() {
       <Sidebar />
       {navOpen && <div className="scrim" onClick={() => setNavOpen(false)} aria-hidden />}
       <div className="main">
-        <Topbar onMenu={() => setNavOpen(true)} />
+        <Topbar onMenu={() => setNavOpen(true)} onDemoInfo={() => setSplashOpen(true)} />
         {workspace.isError && (
           <div className="api-banner" role="alert">
             <ServerCrash aria-hidden />
@@ -54,6 +57,7 @@ export function AppShell() {
       <AskQuestionModal open={askOpen} onClose={closeAsk} />
       <CommandPalette open={paletteOpen} onClose={closePalette} />
       <PaperDrawer />
+      <DemoSplash open={splashOpen} onClose={() => setSplashOpen(false)} />
     </div>
   )
 }

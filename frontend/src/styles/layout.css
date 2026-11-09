@@ -363,9 +363,14 @@
   white-space: nowrap;
 }
 .demo-pill {
+  border: 0;
   background: var(--info-soft);
   color: var(--info-text);
-  cursor: help;
+  font-family: inherit;
+  cursor: pointer;
+}
+.demo-pill:hover {
+  background: color-mix(in srgb, var(--info-text) 14%, var(--info-soft));
 }
 .routing-pill {
   border: 1px solid var(--border);
@@ -457,10 +462,16 @@
 }
 
 @media (max-width: 760px) {
-  .demo-pill,
   .routing-pill,
+  .demo-pill-text,
   .search-trigger .kbd {
     display: none;
+  }
+  .demo-pill {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
   }
   .search-trigger {
     width: auto;
