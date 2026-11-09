@@ -13,6 +13,7 @@ import { Button } from '../ui/Button'
 import { CommandPalette } from './CommandPalette'
 import { shouldShowDemoSplash } from '../../lib/demoSplash'
 import { DemoSplash } from './DemoSplash'
+import { RouteLoader } from './RouteLoader'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
@@ -53,6 +54,7 @@ export function AppShell() {
         <main id="main" className="content" tabIndex={-1}>
           <Outlet />
         </main>
+        <RouteLoader />
       </div>
       <AskQuestionModal open={askOpen} onClose={closeAsk} />
       <CommandPalette open={paletteOpen} onClose={closePalette} />

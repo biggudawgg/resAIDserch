@@ -276,9 +276,44 @@
 /* ---------------------------------------------------------------- main column */
 
 .main {
+  position: relative;
   min-width: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* Page spinner: covers the content area (not the topbar) while a page waits for its first data. */
+.route-loader {
+  position: absolute;
+  inset: var(--topbar-h) 0 0 0;
+  z-index: 30;
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  animation: fade-in 0.15s ease-out;
+}
+.route-loader-inner {
+  position: sticky;
+  top: calc(var(--topbar-h) + 22vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 24px;
+  text-align: center;
+}
+.route-loader-icon {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 6px;
+  color: var(--accent-text);
+}
+.route-loader-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+.route-loader-sub {
+  max-width: 300px;
+  font-size: 13.5px;
+  color: var(--text-2);
 }
 
 .topbar {

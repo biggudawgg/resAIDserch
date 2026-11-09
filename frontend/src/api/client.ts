@@ -38,7 +38,9 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   try {
     response = await fetch(`${BASE}${path}`, {
       ...init,
-      headers: { 'Content-Type': 'application/json', ...init?.headers },
+      // Only declare JSON when sending a body: on a bodyless GET the header makes every cross-origin call
+      // pay for a CORS preflight (an extra round trip to the API).
+      headers: { ...(init?.body ? { 'Content-Type': 'application/json' } : {}), ...init?.headers },
     })
   } catch {
     throw new ApiError("Can't reach the resAIDserch API. Start it with: python demo_server.py", 0)
