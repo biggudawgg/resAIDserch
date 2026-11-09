@@ -38,61 +38,41 @@
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 4px 8px;
-}
-.brand-text {
-  display: grid;
-  line-height: 1.2;
-}
-.brand-name {
-  font-family: var(--font-serif);
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-.brand-sub {
-  font-size: 12px;
-  color: var(--text-3);
+  padding: 6px 10px 10px;
+  color: var(--text);
+  text-decoration: none;
 }
 
-.workspace-card {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  box-shadow: var(--shadow-xs);
-}
-.workspace-avatar {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  font-size: 11.5px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.workspace-text {
-  display: grid;
-  min-width: 0;
-  line-height: 1.3;
-}
-.workspace-name {
-  font-size: 13px;
+/* Wordmark: the name is the logo. "AID" sits on a slightly crooked highlighter stroke. */
+.wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: var(--font-serif);
   font-weight: 600;
-}
-.workspace-project {
-  font-size: 12px;
-  color: var(--text-3);
+  line-height: 1;
+  letter-spacing: -0.025em;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--text);
+}
+.wordmark-mark {
+  position: relative;
+  z-index: 0;
+  margin: 0 0.04em;
+  padding: 0 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.wordmark-mark::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -0.07em;
+  right: -0.09em;
+  top: 0.42em;
+  bottom: -0.04em;
+  border-radius: 0.08em 0.22em 0.1em 0.26em;
+  background: var(--highlight);
+  transform: rotate(-2deg) skewX(-10deg);
 }
 
 .nav {
@@ -100,13 +80,14 @@
 }
 .nav-list {
   display: grid;
-  gap: 2px;
+  gap: 1px;
 }
 .nav-section {
-  margin: 18px 10px 6px;
+  margin: 20px 10px 6px;
+  font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-3);
 }
@@ -114,47 +95,27 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 34px;
+  height: 32px;
   padding: 0 10px;
-  border-radius: 8px;
+  border-radius: 5px;
   color: var(--text-2);
   font-size: 14px;
-  font-weight: 500;
-  position: relative;
-  transition: background 0.15s, color 0.15s;
+  font-weight: 450;
+  transition: background 0.12s, color 0.12s;
 }
 .nav-item:hover {
   background: var(--surface-hover);
   color: var(--text);
 }
 .nav-item.is-active {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-}
-.nav-item.is-active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--accent);
-  animation: nav-bar-in 0.2s var(--ease-out);
+  background: var(--surface-3);
+  color: var(--text);
+  font-weight: 600;
 }
 .nav-icon {
-  width: 17px;
-  height: 17px;
-}
-@keyframes nav-bar-in {
-  from {
-    transform: scaleY(0.2);
-    opacity: 0;
-  }
-  to {
-    transform: none;
-    opacity: 1;
-  }
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
 }
 .nav-label {
   flex: 1;
@@ -165,25 +126,20 @@
   gap: 6px;
 }
 .nav-live {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--accent);
   animation: pulse 1.4s ease-in-out infinite;
 }
+/* Plain numbers, not pills. */
 .nav-count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 12px;
   font-variant-numeric: tabular-nums;
+  color: var(--text-3);
 }
 .nav-count-warn {
-  background: var(--warn-soft);
   color: var(--warn-text);
 }
 
@@ -192,66 +148,6 @@
   gap: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
-}
-.spend-widget {
-  display: grid;
-  gap: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
-  transition: border-color 0.12s;
-}
-.spend-widget:hover {
-  border-color: var(--border-strong);
-}
-.spend-widget-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--text-3);
-  white-space: nowrap;
-}
-.spend-widget-value {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-.spend-widget-value .muted {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--text-3);
-}
-
-.provider-status-list {
-  display: grid;
-  gap: 6px;
-  padding: 0 4px;
-}
-.provider-status-list li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 12.5px;
-}
-.provider-status-name {
-  flex: 1;
-  color: var(--text-2);
-}
-.provider-status-text {
-  color: var(--text-3);
-}
-.provider-status-text.is-connected {
-  color: var(--good-text);
-}
-.provider-status-text.is-untested {
-  color: var(--warn-text);
-}
-.provider-status-text.is-error {
-  color: var(--crit-text);
 }
 
 .user-row {
@@ -333,6 +229,15 @@
 .topbar .menu-button {
   display: none;
 }
+/* Wordmark in the topbar only when the sidebar (which carries it) is hidden. */
+.topbar-brand {
+  display: none;
+  align-items: center;
+  flex: none;
+  margin-right: 4px;
+  color: var(--text);
+  text-decoration: none;
+}
 .search-trigger {
   display: flex;
   align-items: center;
@@ -382,41 +287,23 @@
   gap: 8px;
   margin-left: auto;
 }
-.demo-pill,
-.routing-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 28px;
-  padding: 0 10px;
-  border-radius: 999px;
-  font-size: 12.5px;
-  font-weight: 500;
-  white-space: nowrap;
-}
 .demo-pill {
-  border: 0;
-  background: var(--info-soft);
-  color: var(--info-text);
-  font-family: inherit;
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   cursor: pointer;
 }
 .demo-pill:hover {
-  background: color-mix(in srgb, var(--info-text) 14%, var(--info-soft));
-}
-.routing-pill {
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  background: var(--surface);
-}
-.routing-pill:hover {
-  background: var(--surface-hover);
   color: var(--text);
-}
-.demo-pill svg,
-.routing-pill svg {
-  width: 14px;
-  height: 14px;
+  border-color: var(--text-3);
 }
 
 .api-banner {
@@ -425,7 +312,7 @@
   gap: 12px;
   margin: 16px 32px 0;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--crit-soft);
   border: 1px solid color-mix(in srgb, var(--crit) 30%, transparent);
   font-size: 13.5px;
@@ -482,6 +369,9 @@
   .topbar .menu-button {
     display: inline-flex;
   }
+  .topbar-brand {
+    display: inline-flex;
+  }
   .topbar {
     padding: 0 16px;
   }
@@ -494,16 +384,8 @@
 }
 
 @media (max-width: 760px) {
-  .routing-pill,
-  .demo-pill-text,
   .search-trigger .kbd {
     display: none;
-  }
-  .demo-pill {
-    width: 36px;
-    height: 36px;
-    padding: 0;
-    justify-content: center;
   }
   .search-trigger {
     width: auto;
@@ -530,6 +412,7 @@
     width: 36px;
     justify-content: center;
     padding: 0;
+    margin-left: auto;
   }
 }
 

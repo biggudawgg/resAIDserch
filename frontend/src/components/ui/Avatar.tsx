@@ -1,4 +1,3 @@
-import { Bot } from 'lucide-react'
 import { cx } from '../../lib/cx'
 import { initials } from '../../lib/format'
 
@@ -12,7 +11,7 @@ export function Avatar({ name, size = 'md', agent = false }: { name: string; siz
   if (agent) {
     return (
       <span className={cx('avatar', `avatar-${size}`, 'avatar-agent')} title={name} aria-hidden>
-        <Bot />
+        R
       </span>
     )
   }

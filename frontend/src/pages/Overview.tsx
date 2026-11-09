@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Ban, FlaskConical, LibraryBig, Lightbulb, Plus, Wallet } from 'lucide-react'
+import { ArrowRight, Ban, Lightbulb, Plus } from 'lucide-react'
 import { useMemberName, useOverview, useWorkspace } from '../api/hooks'
 import type { Overview as OverviewData } from '../api/types'
 import { ActivityFeed } from '../components/ActivityFeed'
@@ -11,7 +11,7 @@ import { ConfidenceMeter } from '../components/ui/Meter'
 import { PageHeader } from '../components/ui/PageHeader'
 import { EmptyState, ErrorState, SkeletonCard } from '../components/ui/States'
 import { StatTile } from '../components/ui/StatTile'
-import { formatUsd, greeting, pct, plural, timeAgo } from '../lib/format'
+import { formatUsd, pct, plural, timeAgo } from '../lib/format'
 import { useUI } from '../lib/ui'
 
 export function Overview() {
@@ -23,7 +23,7 @@ export function Overview() {
 
   return (
     <div className="page">
-      <PageHeader title={greeting()} description={team ? `${team.name} · ${team.projectName}` : ' '} />
+      <PageHeader title={team?.name ?? 'Overview'} description={team ? team.projectName : ' '} />
       {overview.data ? (
         <OverviewBody data={overview.data} />
       ) : (
@@ -43,7 +43,6 @@ function OverviewBody({ data }: { data: OverviewData }) {
   const reviewCount = data.review.beliefs.length + data.review.deadEnds.length
   const firstReview = data.review.beliefs[0]?.questionId ?? data.review.deadEnds[0]?.questionId
   const budgetShare = data.spend.budget > 0 ? data.spend.monthToDate / data.spend.budget : 0
-  const budgetTone = budgetShare >= 1 ? 'crit' : budgetShare >= data.spend.alertThreshold ? 'warn' : 'accent'
   const month = new Date().toLocaleDateString(undefined, { month: 'long' })
 
   return (
@@ -58,7 +57,7 @@ function OverviewBody({ data }: { data: OverviewData }) {
             </Link>
           }
         >
-          The agent proposes beliefs and dead ends. Nothing enters team memory until someone approves it.
+          Nothing becomes a team belief until someone approves it.
         </Callout>
       )}
 
@@ -66,31 +65,26 @@ function OverviewBody({ data }: { data: OverviewData }) {
         <StatTile
           label="Active questions"
           value={data.stats.activeQuestions}
-          icon={<FlaskConical />}
           to="/research"
           sub={`${data.stats.running} running · ${data.stats.needsReview} need review`}
         />
         <StatTile
           label="Team beliefs"
           value={data.stats.activeBeliefs}
-          icon={<Lightbulb />}
           to="/beliefs"
           sub={`Average confidence ${pct(data.stats.avgConfidence)}`}
         />
         <StatTile
           label="Papers in library"
           value={data.stats.papers}
-          icon={<LibraryBig />}
           to="/library"
           sub={`${data.stats.papersThisWeek} added this week`}
         />
         <StatTile
           label="Spend this month"
           value={formatUsd(data.spend.monthToDate)}
-          icon={<Wallet />}
           to="/providers"
           sub={`${pct(budgetShare)} of the ${formatUsd(data.spend.budget)} budget`}
-          meter={{ value: budgetShare, tone: budgetTone, label: 'Monthly budget used' }}
         />
       </div>
 
@@ -107,8 +101,7 @@ function OverviewBody({ data }: { data: OverviewData }) {
             {data.running.length === 0 ? (
               <EmptyState
                 compact
-                icon={<FlaskConical />}
-                title="Nothing running right now"
+                      title="Nothing running right now"
                 description="Ask a question and the agent will search, read and summarise the literature."
                 action={
                   <Button size="sm" icon={<Plus />} onClick={openAsk}>

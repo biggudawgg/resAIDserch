@@ -146,8 +146,7 @@
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-xs);
+  border-radius: 8px;
   min-width: 0;
 }
 .card-header {
@@ -188,8 +187,7 @@
   margin-top: 14px;
 }
 .card-highlight {
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--accent);
 }
 .card.is-refreshing,
 .is-refreshing {
@@ -202,7 +200,7 @@
   align-items: flex-start;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid;
 }
 .callout-icon {
@@ -433,13 +431,12 @@
   background: var(--avatar-5-bg);
   color: var(--avatar-5-fg);
 }
+/* The research agent: a plain lettermark, set apart by a dashed outline rather than a robot icon. */
 .avatar-agent {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-}
-.avatar-agent svg {
-  width: 60%;
-  height: 60%;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  color: var(--text-2);
+  font-family: var(--font-mono);
 }
 .avatar-stack {
   display: inline-flex;
@@ -472,13 +469,8 @@
 .empty-icon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
-  margin-bottom: 6px;
-  border-radius: 12px;
-  background: var(--surface-2);
+  margin-bottom: 4px;
   color: var(--text-3);
-  border: 1px solid var(--border);
 }
 .empty-icon svg {
   width: 20px;
@@ -539,7 +531,7 @@
   max-height: calc(100vh - 48px);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 8px;
   box-shadow: var(--shadow-lg);
   animation: pop 0.16s ease-out;
 }
@@ -679,7 +671,7 @@
   padding: 5px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 6px;
   box-shadow: var(--shadow-lg);
   animation: pop 0.1s ease-out;
 }
@@ -1097,20 +1089,16 @@ button.chip:hover {
 .stat-tile {
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: 6px;
   padding: 16px 18px;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: var(--shadow-xs);
   min-width: 0;
 }
 .stat-tile.is-link {
-  transition: border-color 0.15s, box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+  transition: background 0.12s;
 }
 .stat-tile.is-link:hover {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  background: var(--surface-hover);
 }
 .stat-head {
   display: flex;
@@ -1132,10 +1120,11 @@ button.chip:hover {
   height: 16px;
 }
 .stat-value {
-  font-size: 28px;
+  font-size: 26px;
   line-height: 1.1;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
 }
 .stat-sub {
   font-size: 12.5px;
@@ -1159,7 +1148,7 @@ button.chip:hover {
   align-items: flex-start;
   gap: 10px;
   padding: 12px 10px 12px 14px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
@@ -1371,7 +1360,7 @@ button.chip:hover {
   width: min(640px, 100%);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 8px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
   animation: pop 0.14s ease-out;
@@ -1633,81 +1622,60 @@ button.chip:hover {
 /* Demo splash: shown on each new visit, reopened from the topbar "Demo workspace" pill. */
 .splash-overlay {
   z-index: 80;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
 }
 .splash {
-  max-width: 520px;
+  max-width: 500px;
   overflow: hidden;
 }
 .splash-hero {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 10px;
-  padding: 26px 24px 20px;
-  background: var(--surface-2);
+  gap: 8px;
+  padding: 28px 28px 22px;
   border-bottom: 1px solid var(--border);
 }
 .splash-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 24px;
-  padding: 0 9px;
-  margin-top: 6px;
-  border-radius: 999px;
-  background: var(--warn-soft);
-  color: var(--warn-text);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-.splash-tag svg {
-  width: 13px;
-  height: 13px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
 }
 .splash-title {
-  font-family: var(--font-serif);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.2;
+  line-height: 1.1;
 }
 .splash-lead {
-  font-size: 14px;
+  margin-top: 4px;
+  font-size: 14.5px;
   line-height: 1.55;
   color: var(--text-2);
 }
-/* Two classes: base.css resets ul[class] padding, which outranks a single class. */
+/* Two classes: base.css resets ol[class] padding, which outranks a single class. */
 .splash .splash-points {
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin: 0;
-  padding: 20px 24px;
+  padding: 20px 28px 22px;
   list-style: none;
+  counter-reset: splash;
   overflow-y: auto;
 }
 .splash-point {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  position: relative;
+  padding-left: 30px;
+  counter-increment: splash;
 }
-.splash-point-icon {
-  display: inline-flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--accent-soft);
-  color: var(--accent-text);
-}
-.splash-point-icon svg {
-  width: 16px;
-  height: 16px;
+.splash-point::before {
+  content: counter(splash, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
 }
 .splash-point-title {
   font-size: 14px;
@@ -1755,9 +1723,6 @@ button.chip:hover {
   }
   .splash-hero {
     padding: 22px 18px 16px;
-  }
-  .splash-title {
-    font-size: 20px;
   }
   .splash .splash-points {
     padding: 16px 18px;

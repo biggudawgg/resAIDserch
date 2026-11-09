@@ -1,28 +1,25 @@
 import { useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useQuery } from '@tanstack/react-query'
-import { ArrowRight, CheckCircle2, FlaskRound, Loader2, Search, Users, XCircle } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Loader2, XCircle } from 'lucide-react'
 import { api } from '../../api/client'
 import { useDialog } from '../ui/Modal'
 import { Button } from '../ui/Button'
 import { markDemoSplashSeen } from '../../lib/demoSplash'
-import { Logo } from './Logo'
+import { Wordmark } from './Wordmark'
 
 const POINTS = [
   {
-    icon: FlaskRound,
-    title: 'Sample data',
-    body: 'The team, questions, beliefs, meetings and spend figures are made up to show how the product works.',
+    title: 'The data is made up.',
+    body: 'The team, questions, beliefs, meetings and spend figures exist to show how the product works.',
   },
   {
-    icon: Search,
-    title: 'Real paper search, simplified analysis',
-    body: 'New research runs search arXiv for real papers. Claim extraction, confidence and briefings use simple heuristics, not a live LLM.',
+    title: 'Paper search is real.',
+    body: 'New questions search arXiv for real papers. Claim extraction, confidence and briefings use simple heuristics here, not a language model.',
   },
   {
-    icon: Users,
-    title: 'Shared and temporary',
-    body: 'Anything you add is visible to other visitors and is wiped when the server restarts. Please don’t enter private information.',
+    title: 'Everything is shared and temporary.',
+    body: 'Other visitors see what you add, and it is wiped when the server restarts. Don’t enter anything private.',
   },
 ]
 
@@ -62,31 +59,23 @@ export function DemoSplash({ open, onClose }: { open: boolean; onClose: () => vo
     <div className="overlay splash-overlay">
       <div ref={ref} className="modal splash" role="dialog" aria-modal="true" aria-labelledby={titleId}>
         <div className="splash-hero">
-          <Logo size={44} />
-          <span className="splash-tag">
-            <FlaskRound aria-hidden /> Live demo
-          </span>
+          <span className="splash-tag">Live demo</span>
           <h2 id={titleId} className="splash-title">
-            Welcome to resAIDserch
+            <Wordmark size={34} />
           </h2>
           <p className="splash-lead">
-            A shared research memory for engineering teams: an agent reads papers, drafts beliefs with evidence, and your team
-            reviews them before they count.
+            Research notes for engineering teams. Ask a question, get the relevant papers read and summarised with quotes, and
+            decide as a team what you now believe.
           </p>
         </div>
-        <ul className="splash-points">
-          {POINTS.map(({ icon: Icon, title, body }) => (
+        <ol className="splash-points">
+          {POINTS.map(({ title, body }) => (
             <li key={title} className="splash-point">
-              <span className="splash-point-icon">
-                <Icon aria-hidden />
-              </span>
-              <div>
-                <p className="splash-point-title">{title}</p>
-                <p className="splash-point-body">{body}</p>
-              </div>
+              <p className="splash-point-title">{title}</p>
+              <p className="splash-point-body">{body}</p>
             </li>
           ))}
-        </ul>
+        </ol>
         <footer className="splash-footer">
           <ServerStatus />
           <Button variant="primary" iconRight={<ArrowRight />} onClick={close} data-autofocus>

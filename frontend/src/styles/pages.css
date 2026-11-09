@@ -3,7 +3,11 @@
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
 }
 .overview-grid {
   display: grid;
@@ -166,7 +170,7 @@
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow-xs);
   transition: border-color 0.15s, box-shadow 0.2s var(--ease-out), transform 0.2s var(--ease-out);
 }
@@ -344,7 +348,7 @@
   width: 100%;
   padding: 4px 4px 10px;
   border: 0;
-  border-radius: 10px;
+  border-radius: 6px;
   background: none;
   text-align: center;
 }
@@ -405,7 +409,7 @@
 .pstep-detail {
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface-2);
 }
 .pstep-detail-head {
@@ -499,7 +503,7 @@
   padding: 14px 16px;
   border: 1px solid var(--border);
   border-left-width: 3px;
-  border-radius: 10px;
+  border-radius: 6px;
 }
 .claim-supports {
   border-left-color: var(--good);
@@ -561,7 +565,7 @@
 .contradiction {
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 6px;
 }
 .contradiction-pair {
   display: grid;
@@ -667,7 +671,7 @@
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow-xs);
 }
 .stack-sm .deadend {
@@ -727,7 +731,7 @@
 .belief {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow-xs);
   scroll-margin-top: calc(var(--topbar-h) + 16px);
 }
@@ -742,7 +746,7 @@
   width: 100%;
   padding: 16px 18px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   background: none;
   text-align: left;
 }
@@ -919,7 +923,7 @@
   gap: 2px 8px;
   padding: 10px 12px;
   border: 1px solid var(--border-input);
-  border-radius: 10px;
+  border-radius: 6px;
   cursor: pointer;
   transition: border-color 0.12s, box-shadow 0.12s;
 }
@@ -963,7 +967,7 @@
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow-xs);
   transition: border-color 0.12s, box-shadow 0.12s;
 }
@@ -1027,7 +1031,7 @@
   gap: 10px;
   padding: 14px 16px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 6px;
 }
 .stance-head {
   display: flex;
@@ -1089,7 +1093,7 @@
   padding: 16px 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: var(--shadow-xs);
 }
 .provider-card .kv {
@@ -1223,7 +1227,7 @@
   flex-wrap: wrap;
   margin-bottom: 12px;
   padding: 16px 18px;
-  border-radius: 10px;
+  border-radius: 6px;
   background: var(--surface-2);
   border: 1px solid var(--border);
 }

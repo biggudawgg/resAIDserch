@@ -1,21 +1,23 @@
 import { Link } from 'react-router-dom'
-import { FlaskRound, Menu, Moon, Plus, Route, Search, Sun } from 'lucide-react'
-import { useRouting, useWorkspace } from '../../api/hooks'
+import { Menu, Moon, Plus, Search, Sun } from 'lucide-react'
+import { useWorkspace } from '../../api/hooks'
 import { isMac } from '../../lib/hooks'
-import { PRIORITY_META } from '../../lib/providers'
 import { useTheme } from '../../lib/theme'
 import { useUI } from '../../lib/ui'
 import { Button, IconButton } from '../ui/Button'
+import { Wordmark } from './Wordmark'
 
 export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo: () => void }) {
   const { openAsk, openPalette } = useUI()
   const { theme, toggle } = useTheme()
   const workspace = useWorkspace()
-  const routing = useRouting()
 
   return (
     <header className="topbar">
       <IconButton className="menu-button" label="Open navigation" icon={<Menu />} onClick={onMenu} />
+      <Link to="/" className="topbar-brand" aria-label="resAIDserch home">
+        <Wordmark size={19} />
+      </Link>
       <button type="button" className="search-trigger" onClick={openPalette} aria-label="Search and jump to">
         <Search aria-hidden />
         <span className="search-trigger-text">Search questions, beliefs, papers…</span>
@@ -23,16 +25,9 @@ export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo:
       </button>
       <div className="topbar-right">
         {workspace.data?.demo !== false && (
-          <button type="button" className="demo-pill" onClick={onDemoInfo} aria-label="About this demo" title="About this demo">
-            <FlaskRound aria-hidden />
-            <span className="demo-pill-text">Demo workspace</span>
+          <button type="button" className="demo-pill" onClick={onDemoInfo} title="About this demo">
+            Demo
           </button>
-        )}
-        {routing.data && (
-          <Link to="/providers" className="routing-pill" title="Provider routing policy">
-            <Route aria-hidden />
-            {PRIORITY_META[routing.data.priority].label}
-          </Link>
         )}
         <IconButton
           label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
