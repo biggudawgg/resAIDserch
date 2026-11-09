@@ -119,7 +119,7 @@ export function ThemeLamp({ className }: { className?: string }) {
   })
 
   // Read from pointer handlers, which outlive the render they came from.
-  const latest = useRef({ checked, toggle: (_next: boolean) => undefined as void })
+  const latest = useRef<{ checked: boolean; toggle: (next: boolean) => void }>({ checked, toggle: () => undefined })
   const toggle = useCallback((next: boolean) => setMode(next ? 'light' : 'dark'), [setMode])
   latest.current = { checked, toggle }
 
