@@ -1,0 +1,25 @@
+# Ping the Cloud Run backend every few minutes so the demo doesn't hit a cold start.
+# Cloud Run scales to zero after ~15 minutes idle; a cold start costs ~3-4 s and resets the in-memory demo state.
+# The service uses request-based billing (CPU throttled outside requests), so each ping bills only ~100 ms.
+# Free on a public repo. GitHub may delay scheduled runs under load and pauses them after 60 days of no repo activity.
+name: Keep backend warm
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Ping /api/health
+        env:
+          BACKEND_URL: https://lit-scout-backend-4au3rda6xa-el.a.run.app
+        run: |
+          curl --fail --silent --show-error --retry 3 --retry-delay 5 --max-time 30 \
+            -o /dev/null -w "HTTP %{http_code} in %{time_total}s\n" \
+            "$BACKEND_URL/api/health"

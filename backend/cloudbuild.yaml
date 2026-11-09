@@ -33,10 +33,13 @@ steps:
       - '--cpu=2'
       - '--memory=2Gi'
       - '--timeout=900'
-      # State is held in-process, so exactly one always-on instance.
-      - '--min-instances=1'
+      # State is held in-process, so at most one instance. It scales to zero when idle and
+      # .github/workflows/keep-warm.yml pings it every 5 minutes to avoid cold starts.
+      # Request-based billing (CPU throttled between requests) keeps those pings nearly free;
+      # research runs still progress because the UI polls every second while one is running.
+      - '--min-instances=0'
       - '--max-instances=1'
-      - '--no-cpu-throttling'
+      - '--cpu-throttling'
       - '--set-env-vars=ENVIRONMENT=production'
 
 options:
