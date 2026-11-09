@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, Ban, Lightbulb, Plus } from 'lucide-react'
+import { ArrowRight, Plus } from 'lucide-react'
 import { useMemberName, useOverview, useWorkspace } from '../api/hooks'
 import type { Overview as OverviewData } from '../api/types'
 import { ActivityFeed } from '../components/ActivityFeed'
 import { SpendByTask } from '../components/charts/SpendByTask'
 import { PipelineMini } from '../components/research/Pipeline'
+import { ReviewDeck } from '../components/research/ReviewDeck'
 import { Button } from '../components/ui/Button'
 import { Callout, Card } from '../components/ui/Card'
 import { ConfidenceMeter } from '../components/ui/Meter'
@@ -129,40 +130,7 @@ function OverviewBody({ data }: { data: OverviewData }) {
             {reviewCount === 0 ? (
               <EmptyState compact title="You're all caught up" description="New drafts appear here when a research run finishes." />
             ) : (
-              <ul className="list">
-                {data.review.beliefs.map((b) => (
-                  <li key={b.id}>
-                    <Link to={b.questionId ? `/research/${b.questionId}` : `/beliefs?focus=${b.id}`} className="list-row list-row-split">
-                      <span className="list-main">
-                        <span className="list-kicker">
-                          <Lightbulb aria-hidden /> Draft belief
-                        </span>
-                        <span className="list-title">{b.statement}</span>
-                        {b.question && <span className="list-meta">From “{b.question.question}”</span>}
-                      </span>
-                      <span className="list-side">
-                        <ConfidenceMeter value={b.confidence} variant="inline" />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-                {data.review.deadEnds.map((d) => (
-                  <li key={d.id}>
-                    <Link to={d.questionId ? `/research/${d.questionId}` : `/dead-ends?focus=${d.id}`} className="list-row list-row-split">
-                      <span className="list-main">
-                        <span className="list-kicker">
-                          <Ban aria-hidden /> Proposed dead end
-                        </span>
-                        <span className="list-title">{d.title}</span>
-                        <span className="list-meta clamp-2">{d.reason}</span>
-                      </span>
-                      <span className="list-side">
-                        <ArrowRight className="list-chevron" aria-hidden />
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <ReviewDeck beliefs={data.review.beliefs} deadEnds={data.review.deadEnds} />
             )}
           </Card>
 

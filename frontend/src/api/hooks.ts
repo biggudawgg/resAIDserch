@@ -80,6 +80,10 @@ export function useTasks(provider: string) {
   return useQuery({ queryKey: ['tasks', provider], queryFn: () => api.tasks(provider), placeholderData: keepPreviousData })
 }
 
+export function useTaskHistory() {
+  return useQuery({ queryKey: ['task-history'], queryFn: api.taskHistory, staleTime: 60_000 })
+}
+
 export function useSearch(q: string) {
   return useQuery({
     queryKey: ['search', q],

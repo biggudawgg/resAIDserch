@@ -1895,3 +1895,400 @@ button.chip:hover {
   height: 360px;
   border-radius: 6px;
 }
+
+/* ---------------------------------------------------------------- card stack (ported from KokonutUI "Throw Deck") */
+
+.cstack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0 2px;
+}
+.cstack-deck {
+  position: relative;
+  width: min(19rem, calc(100% - 3rem));
+  aspect-ratio: 5 / 4;
+  margin-bottom: 30px;
+}
+.cstack-card {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  transform-origin: bottom center;
+  touch-action: pan-y;
+  user-select: none;
+  will-change: transform;
+  box-shadow: 0 1px 2px rgba(28, 25, 18, 0.06), 0 4px 12px -4px rgba(28, 25, 18, 0.14);
+  transition: box-shadow 0.2s ease-out;
+}
+.cstack-card[data-state='drag'],
+.cstack-card[data-state='fly'] {
+  box-shadow: 0 2px 4px rgba(28, 25, 18, 0.06), 0 28px 48px -16px rgba(28, 25, 18, 0.32);
+}
+.cstack-card.is-top {
+  cursor: grab;
+}
+.cstack-card.is-top[data-state='drag'] {
+  cursor: grabbing;
+}
+.cstack-card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.cstack-face {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px 18px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.cstack-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: min(19rem, calc(100% - 3rem));
+}
+.cstack-nav-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+.cstack-nav-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.cstack-nav-btn:active {
+  transform: translateY(1px);
+}
+.cstack-nav-btn svg {
+  width: 15px;
+  height: 15px;
+}
+.cstack-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.cstack-count-now {
+  color: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .cstack-card {
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -6px rgba(0, 0, 0, 0.7);
+  }
+}
+:root[data-theme='dark'] .cstack-card {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -6px rgba(0, 0, 0, 0.7);
+}
+
+/* Review card face (dashboard "Needs your review"). */
+.rcard-kind {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+.rcard-kind.is-deadend {
+  color: var(--crit-text);
+}
+.rcard-kind.is-belief {
+  color: var(--accent-text);
+}
+.rcard-title {
+  margin-top: 10px;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rcard-body {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.rcard-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.rcard-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-weight: 500;
+}
+.rcard-open svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------------------------------------------------------------- uptime card (ported from KokonutUI) */
+
+.uptime {
+  user-select: none;
+}
+.uptime-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.uptime-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+.uptime-state svg {
+  width: 16px;
+  height: 16px;
+}
+.uptime-state.is-ok {
+  color: var(--good-text);
+}
+.uptime-state.is-warn {
+  color: var(--warn-text);
+}
+.uptime-summary {
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.uptime-bars {
+  margin-top: 16px;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+.uptime-bars:focus-visible {
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 6px var(--focus);
+}
+.uptime-row + .uptime-row {
+  margin-top: 12px;
+}
+.uptime-row-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+}
+.uptime-name {
+  font-weight: 500;
+}
+.uptime-pct {
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.uptime-strip {
+  display: flex;
+  gap: 2px;
+  height: 28px;
+}
+.uptime-bar {
+  min-width: 0;
+  flex-basis: 0;
+  border-radius: 2px;
+  transition: opacity 0.15s ease-out;
+}
+.uptime-bar.is-up {
+  background: var(--good);
+}
+.uptime-bar.is-degraded {
+  background: var(--warn);
+}
+.uptime-bar.is-down {
+  background: var(--crit);
+}
+.uptime-bar.is-none {
+  background: var(--surface-3);
+}
+.uptime-bar.is-dim {
+  opacity: 0.55;
+}
+.uptime-axis {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-3);
+}
+.uptime-log-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.26s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.26s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.uptime-log-wrap.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.uptime-log-clip {
+  overflow: hidden;
+}
+.uptime-log {
+  margin-top: 16px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  user-select: text;
+}
+.uptime-log-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.uptime-log-date {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.uptime-log-close {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+}
+.uptime-log-close:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.uptime-log-close svg {
+  width: 14px;
+  height: 14px;
+}
+.uptime-log-empty {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.uptime-incident {
+  margin-top: 12px;
+}
+.uptime-incident-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+.uptime-pill {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.uptime-pill.is-down {
+  background: var(--crit-soft);
+  color: var(--crit-text);
+}
+.uptime-pill.is-degraded {
+  background: var(--warn-soft);
+  color: var(--warn-text);
+}
+.uptime-incident-service {
+  font-weight: 600;
+}
+.uptime-incident-title {
+  color: var(--text-2);
+}
+/* Two classes: base.css resets ol[class] padding, which outranks a single class. */
+.uptime .uptime-timeline {
+  margin: 10px 0 0 4px;
+  padding: 0;
+  border-left: 1px solid var(--border-strong);
+  list-style: none;
+}
+.uptime-timeline li {
+  position: relative;
+  padding: 0 0 10px 16px;
+  font-size: 13px;
+}
+.uptime-timeline li:last-child {
+  padding-bottom: 0;
+}
+.uptime-timeline li::before {
+  content: '';
+  position: absolute;
+  top: 7px;
+  left: -3.5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-3);
+}
+.uptime-time {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-3);
+}
+.uptime-label {
+  font-weight: 500;
+}
+.uptime-note {
+  color: var(--text-2);
+}
+.uptime-skeleton {
+  height: 260px;
+  border-radius: 6px;
+}
+@media (max-width: 560px) {
+  .uptime-strip {
+    gap: 1px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .uptime-log-wrap {
+    transition: none;
+  }
+}

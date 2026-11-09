@@ -119,6 +119,8 @@ export const api = {
 
   usage: (days: number) => get<Usage>(`/usage?days=${days}`),
   tasks: (provider: string) => get<TaskLog[]>(`/tasks?limit=150${provider ? `&provider=${provider}` : ''}`),
+  /** The most recent calls across providers (server max 500), for the daily health view. */
+  taskHistory: () => get<TaskLog[]>('/tasks?limit=500'),
 
   saveSettings: (body: Partial<{
     teamName: string

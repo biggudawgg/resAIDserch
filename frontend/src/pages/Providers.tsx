@@ -5,6 +5,7 @@ import { api } from '../api/client'
 import { useApiMutation, useProviders, useRouting, useTasks, useUsage } from '../api/hooks'
 import type { Priority, Provider, ProviderId, Routing, TaskLog, Usage } from '../api/types'
 import { ColumnChart, type ColumnDatum } from '../components/charts/ColumnChart'
+import { ProviderHealth } from '../components/charts/ProviderHealth'
 import { SpendBreakdown } from '../components/charts/SpendBreakdown'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
@@ -56,6 +57,12 @@ export function Providers() {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="section">
+        <Card title="Provider health" description="Share of calls that succeeded, day by day for the last 30 days">
+          <ProviderHealth />
+        </Card>
       </section>
 
       <section className="section">{routing.data && providers.data ? <RoutingCard routing={routing.data} providers={providers.data} /> : <SkeletonCard lines={6} />}</section>
