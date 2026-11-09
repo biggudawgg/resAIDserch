@@ -16,6 +16,7 @@ import { shouldShowDemoSplash } from '../../lib/demoSplash'
 import { DemoSplash } from './DemoSplash'
 import { RouteLoader } from './RouteLoader'
 import { Sidebar } from './Sidebar'
+import { StatusIsland } from './StatusIsland'
 import { Topbar } from './Topbar'
 
 /** G then a letter jumps to a page; shown as hints in the command palette. */
@@ -80,6 +81,8 @@ export function AppShell() {
       <AskQuestionModal open={askOpen} onClose={closeAsk} />
       <CommandPalette open={paletteOpen} onClose={closePalette} />
       <PaperDrawer />
+      {/* Phones only (CSS): the top bar's island has no room there, so this one floats at the bottom. */}
+      <StatusIsland className="floating-island" />
       <DemoSplash open={splashOpen} onClose={() => setSplashOpen(false)} />
     </div>
   )

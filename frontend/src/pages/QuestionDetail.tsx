@@ -12,7 +12,6 @@ import {
   FileText,
   History,
   Info,
-  Loader2,
   MoreHorizontal,
   Pencil,
   RefreshCw,
@@ -23,16 +22,19 @@ import { api } from '../api/client'
 import { useApiMutation, useMemberName, useQuestion, useRouting } from '../api/hooks'
 import type { Belief, Contradiction, Findings, ProviderId, RunDetail, Stance } from '../api/types'
 import { DeadEndCard } from '../components/DeadEndCard'
+import { AgentProgress } from '../components/research/AgentProgress'
 import { PipelineTracker } from '../components/research/Pipeline'
-import { RichText } from '../components/research/RichText'
+import { CitedBriefing } from '../components/research/CitedBriefing'
 import { Avatar } from '../components/ui/Avatar'
 import { Badge } from '../components/ui/Badge'
 import { Button, IconButton } from '../components/ui/Button'
+import { UndoButton } from '../components/ui/UndoButton'
 import { Callout, Card } from '../components/ui/Card'
 import { Field, FilterTabs, Textarea } from '../components/ui/Field'
 import { Menu } from '../components/ui/Menu'
 import { ConfidenceMeter } from '../components/ui/Meter'
 import { ConfirmModal } from '../components/ui/Modal'
+import { ScrollIndex } from '../components/ui/ScrollIndex'
 import { PageHeader } from '../components/ui/PageHeader'
 import { ProviderDot } from '../components/ui/ProviderChip'
 import { EmptyState, ErrorState, SkeletonCard } from '../components/ui/States'
@@ -40,6 +42,7 @@ import { BeliefStatusBadge, QuestionStatusBadge, StanceBadge } from '../componen
 import { cx } from '../lib/cx'
 import { formatAuthors, formatDateTime, formatDuration, formatNumber, formatUsdPrecise, plural, shortTitle, timeAgo } from '../lib/format'
 import { useOpenPaper } from '../lib/hooks'
+import { markOnboardingStep } from '../lib/onboarding'
 import { PRIORITY_META, PROVIDER_ORDER, providerLabel } from '../lib/providers'
 import { useUI } from '../lib/ui'
 
@@ -53,6 +56,7 @@ export function QuestionDetail() {
   const openPaper = useOpenPaper()
   const { toast } = useUI()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [watchedRun, setWatchedRun] = useState<string | null>(null)
 
   const rerun = useApiMutation((provider: ProviderId | null) => api.rerun(id as string, provider))
   const archive = useApiMutation((archived: boolean) => api.updateQuestion(id as string, { archived }))
@@ -79,6 +83,8 @@ export function QuestionDetail() {
   }
 
   const running = q.status === 'running'
+  // A run watched live on this page stays as a folded summary after it finishes, instead of vanishing.
+  if (running && q.run && watchedRun !== q.run.id) setWatchedRun(q.run.id)
   const startRun = (provider: ProviderId | null) =>
     rerun.mutate(provider, {
       onSuccess: () =>
@@ -165,135 +171,143 @@ export function QuestionDetail() {
         }
       />
 
-      <div className="meta-row">
-        <QuestionStatusBadge status={q.status} />
-        <span className="meta-item">
-          <Avatar name={nameOf(q.createdBy)} size="xs" />
-          Asked by {nameOf(q.createdBy)} · {timeAgo(q.createdAt)}
-        </span>
-        {q.lastRunAt && (
+      <ScrollIndex label="Sections of this question">
+        <div className="meta-row">
+          <QuestionStatusBadge status={q.status} />
           <span className="meta-item">
-            <History aria-hidden /> Last run {timeAgo(q.lastRunAt)}
+            <Avatar name={nameOf(q.createdBy)} size="xs" />
+            Asked by {nameOf(q.createdBy)} · {timeAgo(q.createdAt)}
           </span>
+          {q.lastRunAt && (
+            <span className="meta-item">
+              <History aria-hidden /> Last run {timeAgo(q.lastRunAt)}
+            </span>
+          )}
+          {q.findings && (
+            <span className="meta-item">
+              <FileText aria-hidden /> {plural(q.findings.papers.length, 'paper')} used of {q.findings.screened} screened
+            </span>
+          )}
+        </div>
+
+        {q.run && (
+          <Card title="Research pipeline" section="Pipeline" description={pipelineDescription(q.run)} actions={<RunTotals run={q.run} />}>
+            <PipelineTracker key={q.run.id} run={q.run} />
+          </Card>
         )}
-        {q.findings && (
-          <span className="meta-item">
-            <FileText aria-hidden /> {plural(q.findings.papers.length, 'paper')} used of {q.findings.screened} screened
-          </span>
+
+        {q.run?.status === 'failed' && (
+          <Callout
+            tone="crit"
+            title="This run stopped with an error"
+            action={
+              <Button icon={<RefreshCw />} onClick={() => startRun(null)} loading={rerun.isPending}>
+                Try again
+              </Button>
+            }
+          >
+            {q.run.error}
+          </Callout>
         )}
-      </div>
 
-      {q.run && (
-        <Card title="Research pipeline" description={pipelineDescription(q.run)} actions={<RunTotals run={q.run} />}>
-          <PipelineTracker key={q.run.id} run={q.run} />
-        </Card>
-      )}
-
-      {q.run?.status === 'failed' && (
-        <Callout
-          tone="crit"
-          title="This run stopped with an error"
-          action={
-            <Button icon={<RefreshCw />} onClick={() => startRun(null)} loading={rerun.isPending}>
-              Try again
-            </Button>
-          }
-        >
-          {q.run.error}
-        </Callout>
-      )}
-
-      {!q.run && (
-        <EmptyState
-          title="No research has run for this question"
-          action={
-            <Button variant="primary" icon={<RefreshCw />} onClick={() => startRun(null)}>
-              Start research
-            </Button>
-          }
-        />
-      )}
-
-      {!q.findings && running && (
-        <Card title="Findings">
+        {!q.run && (
           <EmptyState
-            compact
-            icon={<Loader2 className="spin" />}
-            title="The agent is working"
-            description="The briefing, evidence, contradictions and a draft belief appear here when the run finishes."
+            title="No research has run for this question"
+            action={
+              <Button variant="primary" icon={<RefreshCw />} onClick={() => startRun(null)}>
+                Start research
+              </Button>
+            }
           />
-        </Card>
-      )}
+        )}
 
-      {q.findings && (
-        <div className="detail-grid">
-          <div className="stack">
-            <Card title="Briefing" description={running ? 'From the previous run. A new run is in progress.' : undefined}>
-              <RichText text={q.findings.synthesis} />
-            </Card>
-            <EvidenceCard findings={q.findings} />
-            {q.findings.contradictions.length > 0 && <ContradictionsCard items={q.findings.contradictions} />}
-          </div>
+        {q.run && (running || watchedRun === q.run.id) && (
+          <Card
+            section="Live run"
+            title={running ? 'The agent is working' : 'Run finished'}
+            description={
+              running
+                ? q.findings
+                  ? 'The findings below are from the previous run until this one finishes.'
+                  : 'The briefing, evidence, contradictions and a draft belief appear when the run finishes.'
+                : 'The findings below are from this run.'
+            }
+          >
+            <AgentProgress run={q.run} />
+          </Card>
+        )}
 
-          <div className="stack">
-            {q.belief && <BeliefCard belief={q.belief} questionRunning={running} />}
-            <Card title="How confident, and why">
-              <dl className="kv kv-tight">
-                <div>
-                  <dt>Supporting claims</dt>
-                  <dd>{q.findings.confidence.supporting}</dd>
-                </div>
-                <div>
-                  <dt>Limiting claims</dt>
-                  <dd>{q.findings.confidence.limiting}</dd>
-                </div>
-                <div>
-                  <dt>Context only</dt>
-                  <dd>{q.findings.confidence.neutral}</dd>
-                </div>
-              </dl>
-              <p className="small muted spaced">{q.findings.confidence.rationale}</p>
-            </Card>
-            {q.deadEnds.length > 0 && (
-              <Card title="Dead ends" description="Approaches the evidence argues against.">
-                <div className="stack-sm">
-                  {q.deadEnds.map((d) => (
-                    <DeadEndCard key={d.id} deadEnd={d} showQuestion={false} />
-                  ))}
-                </div>
+        {q.findings && (
+          <div className="detail-grid">
+            <div className="stack">
+              <Card title="Briefing" section="Briefing" description={running ? 'From the previous run. A new run is in progress.' : undefined}>
+                <CitedBriefing claims={q.findings.claims} text={q.findings.synthesis} />
               </Card>
-            )}
-            <Card title="Papers" description={`${q.findings.papers.length} used · ${q.findings.screened} screened`}>
-              <ul className="paper-list">
-                {q.findings.papers.map((p) => (
-                  <li key={p.id}>
-                    <button type="button" className="paper-link" onClick={() => openPaper(p.id)}>
-                      <span className="paper-link-title">{p.title}</span>
-                      <span className="paper-link-meta">
-                        {formatAuthors(p.authors, p.etAl)} · {p.year ?? 'n.d.'}
-                      </span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-            {q.runs.length > 1 && (
-              <Card title="Run history">
-                <ul className="run-history">
-                  {q.runs.map((r) => (
-                    <li key={r.id}>
-                      <span>{formatDateTime(r.startedAt)}</span>
-                      <Badge tone={r.status === 'completed' ? 'good' : r.status === 'failed' ? 'crit' : 'info'}>{r.status}</Badge>
-                      <span className="subtle">{formatDuration(r.totals.durationMs)}</span>
-                      <span className="num">{formatUsdPrecise(r.totals.costUsd)}</span>
+              <EvidenceCard findings={q.findings} />
+              {q.findings.contradictions.length > 0 && <ContradictionsCard items={q.findings.contradictions} />}
+            </div>
+
+            <div className="stack">
+              {q.belief && <BeliefCard belief={q.belief} questionRunning={running} />}
+              <Card title="How confident, and why">
+                <dl className="kv kv-tight">
+                  <div>
+                    <dt>Supporting claims</dt>
+                    <dd>{q.findings.confidence.supporting}</dd>
+                  </div>
+                  <div>
+                    <dt>Limiting claims</dt>
+                    <dd>{q.findings.confidence.limiting}</dd>
+                  </div>
+                  <div>
+                    <dt>Context only</dt>
+                    <dd>{q.findings.confidence.neutral}</dd>
+                  </div>
+                </dl>
+                <p className="small muted spaced">{q.findings.confidence.rationale}</p>
+              </Card>
+              {q.deadEnds.length > 0 && (
+                <Card title="Dead ends" description="Approaches the evidence argues against.">
+                  <div className="stack-sm">
+                    {q.deadEnds.map((d) => (
+                      <DeadEndCard key={d.id} deadEnd={d} showQuestion={false} />
+                    ))}
+                  </div>
+                </Card>
+              )}
+              <Card title="Papers" description={`${q.findings.papers.length} used · ${q.findings.screened} screened`}>
+                <ul className="paper-list">
+                  {q.findings.papers.map((p) => (
+                    <li key={p.id}>
+                      <button type="button" className="paper-link" onClick={() => openPaper(p.id)}>
+                        <span className="paper-link-title">{p.title}</span>
+                        <span className="paper-link-meta">
+                          {formatAuthors(p.authors, p.etAl)} · {p.year ?? 'n.d.'}
+                        </span>
+                      </button>
                     </li>
                   ))}
                 </ul>
               </Card>
-            )}
+              {q.runs.length > 1 && (
+                <Card title="Run history">
+                  <ul className="run-history">
+                    {q.runs.map((r) => (
+                      <li key={r.id}>
+                        <span>{formatDateTime(r.startedAt)}</span>
+                        <Badge tone={r.status === 'completed' ? 'good' : r.status === 'failed' ? 'crit' : 'info'}>{r.status}</Badge>
+                        <span className="subtle">{formatDuration(r.totals.durationMs)}</span>
+                        <span className="num">{formatUsdPrecise(r.totals.costUsd)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+
+      </ScrollIndex>
 
       <ConfirmModal
         open={confirmDelete}
@@ -338,6 +352,8 @@ function BeliefCard({ belief, questionRunning }: { belief: Belief; questionRunni
   const approve = useApiMutation((statement?: string) => api.approveBelief(belief.id, statement))
   const reject = useApiMutation((why: string) => api.rejectBelief(belief.id, why))
   const proposed = belief.status === 'proposed'
+  // While Approve counts down, Edit and Reject are locked: switching away would unmount it and send the approval.
+  const [approving, setApproving] = useState(false)
 
   useEffect(() => {
     setDraft(belief.statement)
@@ -346,7 +362,18 @@ function BeliefCard({ belief, questionRunning }: { belief: Belief; questionRunni
 
   const onApprove = (statement?: string) =>
     approve.mutate(statement, {
-      onSuccess: () => toast('Belief approved', { description: 'It is now part of team memory.' }),
+      onSuccess: () => {
+        markOnboardingStep('review')
+        toast('Belief approved', { description: 'It is now part of team memory.' })
+      },
+      onError: (error) => toast(error.message, { tone: 'error' }),
+    })
+  const onReject = () =>
+    reject.mutate(reason.trim(), {
+      onSuccess: () => {
+        markOnboardingStep('review')
+        toast('Draft rejected')
+      },
       onError: (error) => toast(error.message, { tone: 'error' }),
     })
 
@@ -389,13 +416,12 @@ function BeliefCard({ belief, questionRunning }: { belief: Belief; questionRunni
         <div className="card-actions-row">
           {mode === 'view' && (
             <>
-              <Button variant="primary" icon={<Check />} loading={approve.isPending} onClick={() => onApprove()}>
-                Approve
-              </Button>
-              <Button icon={<Pencil />} onClick={() => setMode('edit')}>
+              {/* Approving and rejecting wait a few seconds before they reach team memory, so a slip can be undone. */}
+              <UndoButton variant="primary" icon={<Check aria-hidden />} label="Approve" doneLabel="Approved" disabled={approve.isPending} onPendingChange={setApproving} onCommit={() => onApprove()} />
+              <Button icon={<Pencil />} disabled={approving} onClick={() => setMode('edit')}>
                 Edit
               </Button>
-              <Button variant="ghost" onClick={() => setMode('reject')}>
+              <Button variant="ghost" disabled={approving} onClick={() => setMode('reject')}>
                 Reject
               </Button>
             </>
@@ -417,19 +443,10 @@ function BeliefCard({ belief, questionRunning }: { belief: Belief; questionRunni
           )}
           {mode === 'reject' && (
             <>
-              <Button
-                variant="danger"
-                loading={reject.isPending}
-                onClick={() =>
-                  reject.mutate(reason.trim(), {
-                    onSuccess: () => toast('Draft rejected'),
-                    onError: (error) => toast(error.message, { tone: 'error' }),
-                  })
-                }
-              >
-                Reject draft
+              <UndoButton variant="danger" label="Reject draft" doneLabel="Rejected" disabled={reject.isPending} onPendingChange={setApproving} onCommit={onReject} />
+              <Button disabled={approving} onClick={() => setMode('view')}>
+                Cancel
               </Button>
-              <Button onClick={() => setMode('view')}>Cancel</Button>
             </>
           )}
         </div>
@@ -458,6 +475,7 @@ function EvidenceCard({ findings }: { findings: Findings }) {
   return (
     <Card
       title="Evidence"
+      section="Evidence"
       description={`${plural(findings.claims.length, 'claim')} from ${plural(findings.papers.length, 'paper')}`}
       actions={
         <FilterTabs
@@ -511,7 +529,7 @@ function EvidenceCard({ findings }: { findings: Findings }) {
 function ContradictionsCard({ items }: { items: Contradiction[] }) {
   const openPaper = useOpenPaper()
   return (
-    <Card title="Contradictions" description="Where papers pull in different directions, and why it might matter for you.">
+    <Card title="Contradictions" section="Contradictions" description="Where papers pull in different directions, and why it might matter for you.">
       <ul className="contradictions">
         {items.map((x) => (
           <li key={x.id} className="contradiction">

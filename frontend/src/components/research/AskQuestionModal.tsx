@@ -10,6 +10,7 @@ import { useUI } from '../../lib/ui'
 import { Button } from '../ui/Button'
 import { Field, Segmented, Textarea } from '../ui/Field'
 import { Modal } from '../ui/Modal'
+import { markOnboardingStep } from '../../lib/onboarding'
 import { ProviderDot } from '../ui/ProviderChip'
 
 const EXAMPLES = [
@@ -52,6 +53,7 @@ export function AskQuestionModal({ open, onClose }: { open: boolean; onClose: ()
       { question: text, context: context.trim() || undefined, provider: mode === 'force' ? provider : null },
       {
         onSuccess: (created) => {
+          markOnboardingStep('ask')
           onClose()
           setQuestion('')
           setContext('')

@@ -1,7 +1,9 @@
+import { useEffect } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ExternalLink, FileText } from 'lucide-react'
 import { useMemberName, usePaper } from '../../api/hooks'
 import { formatAuthors, timeAgo } from '../../lib/format'
+import { markOnboardingStep } from '../../lib/onboarding'
 import { Badge } from '../ui/Badge'
 import { ConfidenceMeter } from '../ui/Meter'
 import { Drawer } from '../ui/Modal'
@@ -14,6 +16,9 @@ export function PaperDrawer() {
   const paper = usePaper(id)
   const nameOf = useMemberName()
   const p = paper.data
+  useEffect(() => {
+    if (p) markOnboardingStep('paper')
+  }, [p])
 
   const close = () => {
     const next = new URLSearchParams(params)

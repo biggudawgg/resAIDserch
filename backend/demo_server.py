@@ -544,16 +544,22 @@ def step_synthesis(ctx: dict, q: dict) -> tuple[str, str]:
         return "Briefing and draft belief written", "sample"
     supporting = [c for c in ctx["claims"] if c["stance"] == "supports"]
     limiting = [c for c in ctx["claims"] if c["stance"] == "limits"]
+
+    # Briefing citations are 1-based positions in the run's claim list, e.g. "[2]". The app renders them as source
+    # chips and the Markdown export numbers its evidence to match.
+    def cite(claim: dict) -> str:
+        return f"[{next(i for i, c in enumerate(ctx['claims']) if c is claim) + 1}]"
+
     lean = "yes" if ctx["score"] >= 0.62 else "mixed" if ctx["score"] >= 0.45 else "no"
     lines = [f"**Bottom line:** Evidence leans {lean}. {len(supporting)} of {len(ctx['claims'])} extracted claims "
              f"support the question and {len(limiting)} raise limitations. (Demo heuristic: connect a provider "
              "for a written analysis.)"]
     if supporting:
         lines += ["", "**Strongest support**"]
-        lines += [f"- “{c['text']}” — {paper_label(ctx['papers'][c['paper']])}" for c in supporting[:3]]
+        lines += [f"- “{c['text']}” — {paper_label(ctx['papers'][c['paper']])} {cite(c)}" for c in supporting[:3]]
     if limiting:
         lines += ["", "**Limitations and open questions**"]
-        lines += [f"- “{c['text']}” — {paper_label(ctx['papers'][c['paper']])}" for c in limiting[:3]]
+        lines += [f"- “{c['text']}” — {paper_label(ctx['papers'][c['paper']])} {cite(c)}" for c in limiting[:3]]
     next_step = ("Review the draft belief, tighten its wording, and approve it." if lean == "yes" else
                  "Narrow the question (model size, hardware, workload) and re-run, or log a dead end if the limits hold.")
     lines += ["", f"**Suggested next step:** {next_step}"]
@@ -917,9 +923,9 @@ def seed_research() -> None:
     ], contradictions=[], score=0.72, rationale="Two supporting claims from the PagedAttention paper and one "
        "neutral claim; no limiting evidence found.", synthesis=(
         "**Bottom line:** Yes. Paged KV allocation raises throughput because far less KV memory is wasted, so more "
-        "requests run concurrently.\n\n**What the evidence says**\n- Fixed-size KV blocks nearly eliminate "
-        "fragmentation compared with pre-allocating for the maximum length.\n- The throughput gain comes from batch "
-        "occupancy, not from faster kernels.\n\n**Suggested next step:** Move the serving stack to block-based KV "
+        "requests run concurrently [1, 2].\n\n**What the evidence says**\n- Fixed-size KV blocks nearly eliminate "
+        "fragmentation compared with pre-allocating for the maximum length [1].\n- The throughput gain comes from batch "
+        "occupancy, not from faster kernels [2].\n\n**Suggested next step:** Move the serving stack to block-based KV "
         "allocation and re-measure throughput at our p50 latency target."),
        screened=11, belief="b_paged", dead_ends=[])
     describe_sample_steps(run)
@@ -948,8 +954,8 @@ def seed_research() -> None:
     ], contradictions=[], score=0.7, rationale="Two supporting claims and one limiting caveat that is addressed by "
        "standard loss scaling.", synthesis=(
         "**Bottom line:** Yes, with guard rails. FP8 matched 16-bit quality in published training runs, and the "
-        "failure modes are known and avoidable.\n\n**What the evidence says**\n- FP8 (E4M3/E5M2) training matched "
-        "16-bit baselines across model families.\n- Mixed precision depends on FP32 master weights and loss scaling."
+        "failure modes are known and avoidable [3].\n\n**What the evidence says**\n- FP8 (E4M3/E5M2) training matched "
+        "16-bit baselines across model families [1].\n- Mixed precision depends on FP32 master weights and loss scaling [2, 3]."
         "\n\n**Open questions**\n- Published results cover pre-training; confirm on our fine-tuning recipes.\n\n"
         "**Suggested next step:** Run one 7B fine-tune in FP8 and compare eval scores with the BF16 baseline."),
        screened=9, belief="b_fp8", dead_ends=[])
@@ -992,9 +998,9 @@ def seed_research() -> None:
        score=0.76, rationale="The limiting claim directly matches our workload (answers early in long documents); the "
        "supporting claim comes from benchmarks that test local context.", synthesis=(
         "**Bottom line:** No. Eviction keeps generation stable but loses exactly the early-document content our QA "
-        "needs.\n\n**What the evidence says**\n- StreamingLLM does not extend the context window; evicted tokens "
-        "cannot be recalled.\n- H2O's quality holds on benchmarks that mostly test local context.\n\n**Suggested next "
-        "step:** Keep the full KV cache at 100k and make it cheaper with paging instead."),
+        "needs [1, 2].\n\n**What the evidence says**\n- StreamingLLM does not extend the context window; evicted tokens "
+        "cannot be recalled [2].\n- H2O's quality holds on benchmarks that mostly test local context [3].\n\n**Suggested next "
+        "step:** Keep the full KV cache at 100k and make it cheaper with paging instead [4]."),
        screened=10, belief="b_sink", dead_ends=["d_sink"])
     describe_sample_steps(run)
 
@@ -1015,7 +1021,7 @@ def seed_research() -> None:
         ("p_smoothquant", "Activation outliers make per-tensor activation quantization hard; smoothing moves that "
                           "difficulty into the weights to recover accuracy.", "limits", "summary"),
     ], contradictions=[], score=0.24, rationale="Both claims limit the naive approach; neither supports it.",
-       synthesis=("**Bottom line:** No. Naive INT8 activations fail at our model sizes because of activation outliers."
+       synthesis=("**Bottom line:** No. Naive INT8 activations fail at our model sizes because of activation outliers [1, 2]."
                   "\n\n**Suggested next step:** Log a dead end; consider SmoothQuant or LLM.int8() instead."),
        screened=8, belief=None, dead_ends=["d_int8"])
     describe_sample_steps(run)
@@ -1057,9 +1063,9 @@ def seed_research() -> None:
         "**Bottom line:** Likely yes for throughput, unproven for per-token latency. Two-bit KV caches hold accuracy "
         "when keys are quantized per channel, and the freed memory lets us raise batch size beyond 6.\n\n"
         "**What the evidence says**\n- KIVI and KVQuant both keep accuracy close to the 16-bit baseline at 2–3 bits, "
-        "provided keys are quantized per channel.\n- KVQuant shows per-token key quantization loses accuracy because "
-        "of outlier channels, so avoid it.\n- Throughput gains come from fitting more sequences in memory, the same "
-        "mechanism PagedAttention exploits.\n\n**Open questions**\n- Neither paper measures decode latency on L40S; "
+        "provided keys are quantized per channel [1, 3].\n- KVQuant shows per-token key quantization loses accuracy because "
+        "of outlier channels, so avoid it [4].\n- Throughput gains come from fitting more sequences in memory, the same "
+        "mechanism PagedAttention exploits [2, 5].\n\n**Open questions**\n- Neither paper measures decode latency on L40S; "
         "dequantization overhead may offset gains at small batch sizes.\n\n**Suggested next step:** Prototype "
         "KIVI-style quantization on staging at batch 6 → 16 and measure p50/p99 decode latency."),
        screened=12, belief="b_kv2bit", dead_ends=["d_pertoken"])
@@ -1108,9 +1114,9 @@ def seed_research() -> None:
         "rationale": "Three supporting claims, but the two limiting claims describe exactly our regime "
                      "(batch 8+). Evidence is indirect for our setup.",
         "synthesis": ("**Bottom line:** Promising at small batch sizes, uncertain at batch 8+. Every speed-up result "
-                      "assumes spare compute during decoding.\n\n**What the evidence says**\n- Draft-and-verify and "
-                      "Medusa-style heads preserve output quality while cutting latency.\n- Gains shrink as batches "
-                      "grow and when drafted tokens are often rejected.\n\n**Suggested next step:** Benchmark Medusa "
+                      "assumes spare compute during decoding [4].\n\n**What the evidence says**\n- Draft-and-verify and "
+                      "Medusa-style heads preserve output quality while cutting latency [1, 2, 3].\n- Gains shrink as batches "
+                      "grow and when drafted tokens are often rejected [4, 5].\n\n**Suggested next step:** Benchmark Medusa "
                       "heads on the 7B model at batch 1, 4, 8 and 16 before committing."),
         "belief": "Speculative decoding is likely to help our 7B chat model at small batch sizes, but gains at batch "
                   "8+ need measurement because they rely on spare compute.",
@@ -1686,10 +1692,11 @@ def briefing(qid: str) -> PlainTextResponse:
             lines += ["## Belief", "", f"{b['statement']} — confidence {round(b['confidence'] * 100)}% ({b['status']})",
                       ""]
         lines += ["## Evidence", ""]
-        for c in findings["claims"]:
+        # Numbered to match the briefing's [n] citations.
+        for n, c in enumerate(findings["claims"], 1):
             paper = c["paper"] or {}
             quote = f"“{c['text']}”" if c["kind"] == "quote" else c["text"]
-            lines.append(f"- **{c['stance']}** — {quote} ({paper.get('title', 'unknown')}, arXiv:{paper.get('arxivId')})")
+            lines.append(f"{n}. **{c['stance']}** — {quote} ({paper.get('title', 'unknown')}, arXiv:{paper.get('arxivId')})")
         if findings["contradictions"]:
             lines += ["", "## Contradictions", ""]
             lines += [f"- {x['explanation']}" for x in findings["contradictions"]]

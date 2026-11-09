@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 import { CheckCircle2, Info, XCircle } from 'lucide-react'
+import { markOnboardingStep } from './onboarding'
 import { NotificationStack, type StackNotification } from '../components/ui/NotificationStack'
 
 type ToastTone = 'success' | 'error' | 'info'
@@ -69,7 +70,10 @@ export function UIProvider({ children }: { children: ReactNode }) {
       },
       closeAsk: () => setAskOpen(false),
       paletteOpen,
-      openPalette: () => setPaletteOpen(true),
+      openPalette: () => {
+        markOnboardingStep('palette')
+        setPaletteOpen(true)
+      },
       closePalette: () => setPaletteOpen(false),
       toast,
     }),

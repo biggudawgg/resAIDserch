@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Trash2 } from 'lucide-react'
+import { TextQuote, Trash2 } from 'lucide-react'
 import { api } from '../api/client'
 import { useApiMutation, useMeeting, useMemberName } from '../api/hooks'
 import type { MeetingStance, MeetingStanceValue } from '../api/types'
@@ -9,6 +9,7 @@ import { Avatar } from '../components/ui/Avatar'
 import { Badge } from '../components/ui/Badge'
 import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
+import { Transcript } from '../components/meetings/Transcript'
 import { Select } from '../components/ui/Field'
 import { ConfirmModal } from '../components/ui/Modal'
 import { PageHeader } from '../components/ui/PageHeader'
@@ -26,6 +27,9 @@ export function MeetingDetail() {
   const qc = useQueryClient()
   const { toast } = useUI()
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [transcriptOpen, setTranscriptOpen] = useState(false)
+  // The stance whose quote is drawn over in the transcript; the nonce replays the drawing on every click.
+  const [focus, setFocus] = useState<{ quote: string; nonce: number } | null>(null)
   const update = useApiMutation((v: { stanceId: string; verified?: boolean; stance?: MeetingStanceValue }) =>
     api.updateStance(id as string, v.stanceId, { verified: v.verified, stance: v.stance }),
   )
@@ -52,6 +56,10 @@ export function MeetingDetail() {
 
   const label = (s: MeetingStance) => (s.memberId ? nameOf(s.memberId) : s.speaker)
   const people = Array.from(new Set(m.stances.map(label)))
+  const showInTranscript = (s: MeetingStance) => {
+    setTranscriptOpen(true)
+    setFocus((prev) => ({ quote: s.quote, nonce: (prev?.nonce ?? 0) + 1 }))
+  }
   const latest = (person: string, topic: string) => [...m.stances].reverse().find((s) => label(s) === person && s.topic === topic)
 
   return (
@@ -73,7 +81,7 @@ export function MeetingDetail() {
         </p>
       )}
 
-      <Card title="Stance map" description="Each person's latest position per topic. Hover a cell to read the quote.">
+      <Card title="Stance map" description="Each person's latest position per topic. Hover a cell to read the quote, or click it to find it in the transcript.">
         <div className="table-wrap">
           <table className="table stance-table">
             <thead>
@@ -100,9 +108,15 @@ export function MeetingDetail() {
                     return (
                       <td key={topic}>
                         {stance ? (
-                          <span title={`“${stance.quote}”`}>
+                          <button
+                            aria-label={`${person} on ${topic}: ${MEETING_STANCE_LABEL[stance.stance]}. Show the quote in the transcript`}
+                            className="stance-cell"
+                            onClick={() => showInTranscript(stance)}
+                            title={`“${stance.quote}”`}
+                            type="button"
+                          >
                             <MeetingStanceBadge stance={stance.stance} />
-                          </span>
+                          </button>
                         ) : (
                           <span className="subtle">No stance</span>
                         )}
@@ -139,6 +153,9 @@ export function MeetingDetail() {
               </div>
               <blockquote className="stance-quote">“{s.quote}”</blockquote>
               <div className="stance-controls">
+                <button className="link-sm stance-locate" onClick={() => showInTranscript(s)} type="button">
+                  <TextQuote aria-hidden /> Show in transcript
+                </button>
                 <Select
                   aria-label={`Stance of ${label(s)} on ${s.topic}`}
                   value={s.stance}
@@ -160,11 +177,8 @@ export function MeetingDetail() {
         </ul>
       </Card>
 
-      <Card title="Transcript">
-        <details className="transcript-details">
-          <summary>Show the full transcript</summary>
-          <pre className="transcript">{m.transcript}</pre>
-        </details>
+      <Card title="Transcript" id="transcript">
+        <Transcript focus={focus} onToggle={(open) => !open && setFocus(null)} open={transcriptOpen} setOpen={setTranscriptOpen} text={m.transcript} />
       </Card>
 
       <ConfirmModal

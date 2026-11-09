@@ -4,6 +4,7 @@ import { ArrowRight, ClipboardCheck, FlaskConical, History, Lightbulb, Plus, Wal
 import { useMemberName, useOverview, useWorkspace } from '../api/hooks'
 import type { Overview as OverviewData } from '../api/types'
 import { ActivityFeed } from '../components/ActivityFeed'
+import { OnboardingChecklist } from '../components/OnboardingChecklist'
 import { SpendByTask } from '../components/charts/SpendByTask'
 import { PipelineMini } from '../components/research/Pipeline'
 import { ReviewDeck } from '../components/research/ReviewDeck'
@@ -224,6 +225,8 @@ function OverviewBody({ data }: { data: OverviewData }) {
           Nothing becomes a team belief until someone approves it.
         </Callout>
       )}
+
+      <OnboardingChecklist reviewTo={firstReview ? `/research/${firstReview}` : '/beliefs'} />
 
       <div className="kpi-grid">
         <StatTile

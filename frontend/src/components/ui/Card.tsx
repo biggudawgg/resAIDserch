@@ -10,6 +10,7 @@ export function Card({
   className,
   flush = false,
   id,
+  section,
 }: {
   title?: ReactNode
   description?: ReactNode
@@ -18,9 +19,11 @@ export function Card({
   className?: string
   flush?: boolean
   id?: string
+  /** Names the card in a page's ScrollIndex rail. */
+  section?: string
 }) {
   return (
-    <section className={cx('card', className)} id={id}>
+    <section className={cx('card', className)} data-section={section} id={id}>
       {(title || actions) && (
         <header className="card-header">
           <div className="card-heading">

@@ -445,8 +445,9 @@
 .avatar-stack .avatar {
   box-shadow: 0 0 0 2px var(--surface);
 }
+/* A small overlap: initials sit near the edges, and a deeper overlap (with the 2px ring) covered the second letter. */
 .avatar-stack .avatar + .avatar {
-  margin-left: -6px;
+  margin-left: -3px;
 }
 .avatar-more {
   background: var(--surface-2);

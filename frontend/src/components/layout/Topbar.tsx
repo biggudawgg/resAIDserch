@@ -5,6 +5,7 @@ import { isMac } from '../../lib/hooks'
 import { useTheme } from '../../lib/theme'
 import { useUI } from '../../lib/ui'
 import { Button, IconButton } from '../ui/Button'
+import { StatusIsland } from './StatusIsland'
 import { Wordmark } from './Wordmark'
 
 export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo: () => void }) {
@@ -23,6 +24,7 @@ export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo:
         <span className="search-trigger-text">Search questions, beliefs, papers…</span>
         <kbd className="kbd">{isMac ? '⌘K' : 'Ctrl K'}</kbd>
       </button>
+      <StatusIsland className="topbar-island" />
       <div className="topbar-right">
         {workspace.data?.demo !== false && (
           <button type="button" className="demo-pill" onClick={onDemoInfo} title="About this demo">
