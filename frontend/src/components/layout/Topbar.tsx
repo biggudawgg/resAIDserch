@@ -1,16 +1,15 @@
 import { Link } from 'react-router-dom'
-import { Menu, Moon, Plus, Search, Sun } from 'lucide-react'
+import { Menu, Plus, Search } from 'lucide-react'
 import { useWorkspace } from '../../api/hooks'
 import { isMac } from '../../lib/hooks'
-import { useTheme } from '../../lib/theme'
 import { useUI } from '../../lib/ui'
 import { Button, IconButton } from '../ui/Button'
 import { StatusIsland } from './StatusIsland'
+import { ThemeLamp } from './ThemeLamp'
 import { Wordmark } from './Wordmark'
 
 export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo: () => void }) {
   const { openAsk, openPalette } = useUI()
-  const { theme, toggle } = useTheme()
   const workspace = useWorkspace()
 
   return (
@@ -31,11 +30,7 @@ export function Topbar({ onMenu, onDemoInfo }: { onMenu: () => void; onDemoInfo:
             Demo
           </button>
         )}
-        <IconButton
-          label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-          icon={theme === 'dark' ? <Sun /> : <Moon />}
-          onClick={toggle}
-        />
+        <ThemeLamp />
         <Button variant="primary" icon={<Plus />} onClick={openAsk} className="ask-button" aria-label="Ask a research question">
           <span className="ask-button-text">Ask question</span>
         </Button>

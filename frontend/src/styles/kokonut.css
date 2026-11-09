@@ -2897,3 +2897,78 @@ ol.transcript-lines {
     gap: 0;
   }
 }
+
+/* ---------------------------------------------------------------- theme lamp (pull cord) */
+
+/* Fills the top bar's height so the lamp hangs from the bar's top edge; the cord dangles below the bar. */
+.lamp {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: var(--topbar-h);
+  align-self: center;
+}
+.lamp-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: visible;
+  touch-action: none;
+  user-select: none;
+  /* Only the cord and bead catch the pointer, so content under the dangling cord stays clickable. */
+  pointer-events: none;
+}
+.lamp-hit,
+.lamp-bead-group {
+  pointer-events: auto;
+  cursor: grab;
+}
+.lamp.is-grabbing .lamp-svg {
+  pointer-events: auto;
+  cursor: grabbing;
+}
+.lamp-wire {
+  stroke: var(--border-strong);
+}
+.lamp-shade {
+  fill: var(--text);
+  transition: fill 0.3s ease-out;
+}
+.lamp-bulb {
+  fill: var(--surface-3);
+  transition: fill 0.3s ease-out;
+}
+.lamp-glow {
+  fill: var(--highlight);
+  opacity: 0;
+  filter: blur(6px);
+  transition: opacity 0.35s ease-out;
+}
+.lamp-cord {
+  stroke: var(--text-3);
+}
+.lamp-bead {
+  fill: var(--text-2);
+  transition: fill 0.3s ease-out;
+}
+.lamp-focus {
+  fill: none;
+  stroke: var(--focus);
+}
+.lamp.is-on .lamp-bulb {
+  fill: #f4c75a;
+}
+.lamp.is-on .lamp-glow {
+  opacity: 0.85;
+}
+.lamp.is-on .lamp-bead {
+  fill: var(--accent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lamp-shade,
+  .lamp-bulb,
+  .lamp-glow,
+  .lamp-bead {
+    transition: none;
+  }
+}
