@@ -56,6 +56,14 @@
   --series-groq: #1baf7a;
   --series-custom: #eda100;
   --series-muted: #a8a49b;
+  /* Categorical slots for breakdowns (spending ring). */
+  --cat-1: #2a78d6;
+  --cat-2: #1baf7a;
+  --cat-3: #eb6834;
+  --cat-4: #d99a1e;
+  --cat-5: #c2507a;
+  --cat-6: #6f66b0;
+  --cat-other: #a8a49b;
 
   --grid: #ebe8e1;
   --axis: #cbc6bb;
@@ -123,6 +131,13 @@
     --series-groq: #199e70;
     --series-custom: #c98500;
     --series-muted: #64625b;
+    --cat-1: #3987e5;
+    --cat-2: #20b47f;
+    --cat-3: #e5733f;
+    --cat-4: #e0a734;
+    --cat-5: #d6688f;
+    --cat-6: #8a80cc;
+    --cat-other: #64625b;
     --grid: #282826;
     --axis: #3f3f3b;
     --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -184,6 +199,13 @@
   --series-groq: #199e70;
   --series-custom: #c98500;
   --series-muted: #64625b;
+  --cat-1: #3987e5;
+  --cat-2: #20b47f;
+  --cat-3: #e5733f;
+  --cat-4: #e0a734;
+  --cat-5: #d6688f;
+  --cat-6: #8a80cc;
+  --cat-other: #64625b;
   --grid: #282826;
   --axis: #3f3f3b;
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);

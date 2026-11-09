@@ -3,7 +3,7 @@ import { ArrowRight, Ban, Lightbulb, Plus } from 'lucide-react'
 import { useMemberName, useOverview, useWorkspace } from '../api/hooks'
 import type { Overview as OverviewData } from '../api/types'
 import { ActivityFeed } from '../components/ActivityFeed'
-import { SpendBreakdown } from '../components/charts/SpendBreakdown'
+import { SpendByTask } from '../components/charts/SpendByTask'
 import { PipelineMini } from '../components/research/Pipeline'
 import { Button } from '../components/ui/Button'
 import { Callout, Card } from '../components/ui/Card'
@@ -43,7 +43,6 @@ function OverviewBody({ data }: { data: OverviewData }) {
   const reviewCount = data.review.beliefs.length + data.review.deadEnds.length
   const firstReview = data.review.beliefs[0]?.questionId ?? data.review.deadEnds[0]?.questionId
   const budgetShare = data.spend.budget > 0 ? data.spend.monthToDate / data.spend.budget : 0
-  const month = new Date().toLocaleDateString(undefined, { month: 'long' })
 
   return (
     <>
@@ -197,15 +196,15 @@ function OverviewBody({ data }: { data: OverviewData }) {
 
         <div className="stack">
           <Card
-            title="Spend by provider"
-            description={`${month} to date`}
+            title="Spending"
+            description="By task, last 30 days"
             actions={
               <Link className="link" to="/providers">
                 Usage
               </Link>
             }
           >
-            <SpendBreakdown items={data.spend.byProvider} />
+            <SpendByTask />
           </Card>
           <Card title="Recent activity">
             <ActivityFeed items={data.activity} />

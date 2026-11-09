@@ -1735,3 +1735,163 @@ button.chip:hover {
     justify-content: center;
   }
 }
+
+/* ---------------------------------------------------------------- spending ring (ported from KokonutUI) */
+
+.sring {
+  display: grid;
+  gap: 14px;
+}
+.sring-dial {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  aspect-ratio: 1;
+  margin: 2px auto 0;
+  border-radius: 50%;
+  outline: none;
+  touch-action: none;
+  user-select: none;
+  cursor: grab;
+}
+.sring-dial.is-dragging {
+  cursor: grabbing;
+}
+.sring-dial:focus-visible {
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--focus);
+}
+.sring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.sring-seg {
+  transition: stroke-width 0.2s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.sring-seg.is-dim {
+  opacity: 0.4;
+}
+.sring-marker {
+  fill: var(--text);
+}
+.sring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+.sring-readout {
+  display: grid;
+  gap: 2px;
+  max-width: 140px;
+  animation: sring-in 0.2s ease-out;
+}
+@keyframes sring-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+.sring-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.sring-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.sring-amount {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.sring-meta {
+  font-size: 12px;
+  color: var(--text-3);
+  font-variant-numeric: tabular-nums;
+}
+.sring-meta.is-up {
+  color: var(--crit-text);
+}
+.sring-meta.is-down {
+  color: var(--good-text);
+}
+/* Two classes: base.css resets ul[class] padding, which outranks a single class. */
+.sring .sring-legend {
+  display: grid;
+  gap: 1px;
+}
+.sring-key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 12.5px;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out;
+}
+.sring-key:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+.sring-key.is-on {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.sring-key:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 1px;
+}
+.sring-key-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sring-key-amount {
+  font-variant-numeric: tabular-nums;
+}
+.sring-note {
+  font-size: 12px;
+  color: var(--text-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sring-readout {
+    animation: none;
+  }
+}
+.sring-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.sring-total strong {
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.sring-skeleton {
+  height: 360px;
+  border-radius: 6px;
+}
