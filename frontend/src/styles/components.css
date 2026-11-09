@@ -20,11 +20,8 @@
   transition: transform 0.25s var(--ease-spring);
 }
 .btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.97);
+  transform: translateY(1px);
   transition-duration: 0.06s;
-}
-.btn-icon:hover:not(:disabled) svg {
-  transform: scale(1.1);
 }
 .btn-md {
   height: 36px;
@@ -55,30 +52,12 @@
 }
 .btn-primary {
   background-color: var(--accent);
-  background-image: var(--accent-grad);
   color: #fff;
-  box-shadow: var(--shadow-accent), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-/* A soft highlight that sweeps across primary buttons on hover. */
-.btn-primary::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.24) 50%, transparent 65%) no-repeat;
-  background-size: 250% 100%;
-  background-position: 140% 0;
-  pointer-events: none;
-  transition: background-position 0.7s var(--ease-out);
+  box-shadow: var(--shadow-accent);
 }
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  filter: brightness(1.06) saturate(1.05);
-  box-shadow: var(--shadow-accent-lg), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-}
-.btn-primary:hover:not(:disabled)::after {
-  background-position: -40% 0;
+  background-color: var(--accent-hover);
+  box-shadow: var(--shadow-accent-lg);
 }
 .btn-secondary {
   background: var(--surface);
@@ -90,7 +69,6 @@
   background: var(--surface-hover);
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
 }
 .btn-ghost {
   background: transparent;
@@ -106,8 +84,6 @@
 }
 .btn-danger:hover:not(:disabled) {
   background: var(--crit-hover);
-  box-shadow: 0 8px 20px -8px rgba(208, 59, 59, 0.55);
-  transform: translateY(-1px);
 }
 .btn-subtle {
   background: var(--accent-soft);
@@ -314,10 +290,11 @@
   flex: 1 1 420px;
 }
 .page-title {
-  font-size: 26px;
-  line-height: 1.25;
-  font-weight: 650;
-  letter-spacing: -0.018em;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   text-wrap: balance;
 }
 .page-desc {
@@ -1134,7 +1111,6 @@ button.chip:hover {
 .stat-tile.is-link:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
-  transform: translateY(-2px);
 }
 .stat-head {
   display: flex;
@@ -1670,9 +1646,7 @@ button.chip:hover {
   align-items: flex-start;
   gap: 10px;
   padding: 26px 24px 20px;
-  background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--accent) 16%, transparent) 0%, transparent 60%),
-    var(--surface);
+  background: var(--surface-2);
   border-bottom: 1px solid var(--border);
 }
 .splash-tag {
@@ -1694,9 +1668,10 @@ button.chip:hover {
   height: 13px;
 }
 .splash-title {
-  font-size: 22px;
-  font-weight: 680;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
   line-height: 1.2;
 }
 .splash-lead {

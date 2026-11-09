@@ -1,16 +1,10 @@
+/** Mark: three lines of notes, the last ending in a highlighted finding. Keep in sync with the favicon in index.html. */
 export function Logo({ size = 30 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden className="logo">
-      <defs>
-        <linearGradient id="hs-logo-gradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6366f1" />
-          <stop offset="1" stopColor="#6d28d9" />
-        </linearGradient>
-      </defs>
-      <rect width="32" height="32" rx="9" fill="url(#hs-logo-gradient)" />
-      <circle cx="14.5" cy="14.5" r="6.25" fill="none" stroke="#fff" strokeWidth="2.5" />
-      <path d="M19.3 19.3 24 24" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M12.1 14.6l1.7 1.7 3.1-3.3" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <rect width="32" height="32" rx="7" fill="var(--logo-tile, #14594c)" />
+      <path d="M9 10.5h14M9 16h14M9 21.5h7" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+      <circle cx="21.5" cy="21.5" r="2.7" fill="#e8a838" />
     </svg>
   )
 }

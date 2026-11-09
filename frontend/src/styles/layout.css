@@ -46,8 +46,9 @@
   line-height: 1.2;
 }
 .brand-name {
-  font-size: 15px;
-  font-weight: 650;
+  font-family: var(--font-serif);
+  font-size: 17px;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 .brand-sub {
@@ -138,16 +139,12 @@
   bottom: 8px;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: var(--accent-grad);
-  animation: nav-bar-in 0.25s var(--ease-spring);
+  background: var(--accent);
+  animation: nav-bar-in 0.2s var(--ease-out);
 }
 .nav-icon {
   width: 17px;
   height: 17px;
-  transition: transform 0.25s var(--ease-spring);
-}
-.nav-item:hover .nav-icon {
-  transform: scale(1.12) rotate(-4deg);
 }
 @keyframes nav-bar-in {
   from {

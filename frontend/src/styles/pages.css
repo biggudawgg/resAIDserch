@@ -173,7 +173,6 @@
 .qrow:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-sm);
-  transform: translateY(-1px);
 }
 .qrow-main {
   display: grid;
@@ -1291,7 +1290,7 @@
 
 @media (max-width: 720px) {
   .page-title {
-    font-size: 22px;
+    font-size: 25px;
   }
   .callout {
     flex-wrap: wrap;
