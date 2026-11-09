@@ -177,6 +177,9 @@ function buildSections(page: CommandItem | undefined, rootItems: CommandItem[], 
   }
   const sections = groupRows(rows, fallback)
   for (const section of sections) section.rows.sort((a, b) => b.score - a.score)
+  // Groups follow their best row, so a direct name match ("libr" → Library) outranks a group that only matched on a
+  // keyword. The sort is stable: groups that tie keep their usual order.
+  sections.sort((a, b) => (b.rows[0]?.score ?? 0) - (a.rows[0]?.score ?? 0))
   // Live results are already matched by the server: keep its order, highlight what we can.
   if (!page && results.length) {
     sections.unshift({

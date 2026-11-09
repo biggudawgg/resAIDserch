@@ -7,7 +7,6 @@ import { PRIMARY_NAV, SYSTEM_NAV, type NavItem } from './nav'
 import { ProfileMenu } from './ProfileMenu'
 import { Wordmark } from './Wordmark'
 
-
 export function Sidebar() {
   const workspace = useWorkspace()
   const overview = useOverview()

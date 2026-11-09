@@ -44,7 +44,7 @@ const EASE_OUT = [0.23, 1, 0.32, 1] as const
 const NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'Home', 'End'])
 const STATUS_KEY = 'resaidserch.presence'
 /** Everything this browser remembers for the demo; cleared by "Reset my preferences". */
-const PREFERENCE_KEYS = ['hs-theme', STATUS_KEY, 'resaidserch.palette-recent', 'resaidserch.onboarding']
+const PREFERENCE_KEYS = ['hs-theme', STATUS_KEY, 'resaidserch.palette-recent', 'resaidserch.onboarding', 'resaidserch.overview-layout']
 
 type Phase = 'closed' | 'open' | 'closing'
 type Page = 'main' | 'team'
@@ -607,7 +607,12 @@ export function ProfileMenu({ me, members, holdDuration = 1200 }: { me: Member; 
                       setMode('system')
                       saveAvatarVariant(null)
                       setStatusState('online')
-                      toast('Preferences reset', { tone: 'info', description: 'Theme, status, avatar, recent commands and the welcome screen are back to their defaults.' })
+                      // The overview listens for this to put its widgets back without a reload.
+                      window.dispatchEvent(new Event('resaidserch:layout-reset'))
+                      toast('Preferences reset', {
+                        tone: 'info',
+                        description: 'Theme, status, avatar, overview layout, recent commands and the welcome screen are back to their defaults.',
+                      })
                       closeMenu(via, true)
                     }}
                   />

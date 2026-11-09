@@ -9,12 +9,6 @@
   border-radius: 8px;
   overflow: hidden;
 }
-.overview-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
-}
 .detail-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
@@ -1256,7 +1250,6 @@
 /* ---------------------------------------------------------------- responsive */
 
 @media (max-width: 1180px) {
-  .overview-grid,
   .detail-grid,
   .usage-grid {
     grid-template-columns: minmax(0, 1fr);

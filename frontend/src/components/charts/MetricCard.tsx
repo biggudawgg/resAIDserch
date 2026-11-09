@@ -69,21 +69,36 @@ function resample(values: number[], count: number) {
 
 const yOf = (height: number) => PAD_Y + (1 - height) * (H - PAD_Y * 2)
 
-/** Heights 0..1 to an SVG path, smoothed with a Catmull-Rom spline. */
+/**
+ * Heights 0..1 to an SVG path, smoothed with a monotone cubic (Steffen's method, as in d3's curveMonotoneX).
+ * Unlike a Catmull-Rom spline it never overshoots between days, so the line can't dip below zero or peak above a
+ * value that was never spent.
+ */
 function toPath(heights: number[]) {
   if (heights.length === 0) return ''
   const pts = heights.map((h, i) => [(i / Math.max(1, heights.length - 1)) * W, yOf(h)])
-  let d = `M${pts[0][0].toFixed(2)} ${pts[0][1].toFixed(2)}`
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i - 1] ?? pts[i]
-    const p1 = pts[i]
-    const p2 = pts[i + 1]
-    const p3 = pts[i + 2] ?? p2
-    const c1x = p1[0] + (p2[0] - p0[0]) / 6
-    const c1y = p1[1] + (p2[1] - p0[1]) / 6
-    const c2x = p2[0] - (p3[0] - p1[0]) / 6
-    const c2y = p2[1] - (p3[1] - p1[1]) / 6
-    d += `C${c1x.toFixed(2)} ${c1y.toFixed(2)} ${c2x.toFixed(2)} ${c2y.toFixed(2)} ${p2[0].toFixed(2)} ${p2[1].toFixed(2)}`
+  const n = pts.length
+  const fmt = (p: number[]) => `${p[0].toFixed(2)} ${p[1].toFixed(2)}`
+  if (n === 1) return `M${fmt(pts[0])}`
+  // Secant slope of each segment, then a tangent per point clamped so no segment leaves its two end values.
+  const secant = pts.slice(0, -1).map((p, i) => (pts[i + 1][1] - p[1]) / (pts[i + 1][0] - p[0]))
+  const tangent = pts.map((_, i) => {
+    if (i === 0) return secant[0]
+    if (i === n - 1) return secant[n - 2]
+    const s0 = secant[i - 1]
+    const s1 = secant[i]
+    if (s0 * s1 <= 0) return 0
+    const h0 = pts[i][0] - pts[i - 1][0]
+    const h1 = pts[i + 1][0] - pts[i][0]
+    const blend = (s0 * h1 + s1 * h0) / (h0 + h1)
+    return Math.sign(s0) * Math.min(Math.abs(s0), Math.abs(s1), Math.abs(blend) / 2) * 2
+  })
+  let d = `M${fmt(pts[0])}`
+  for (let i = 0; i < n - 1; i++) {
+    const [x0, y0] = pts[i]
+    const [x1, y1] = pts[i + 1]
+    const third = (x1 - x0) / 3
+    d += `C${fmt([x0 + third, y0 + tangent[i] * third])} ${fmt([x1 - third, y1 - tangent[i + 1] * third])} ${fmt([x1, y1])}`
   }
   return d
 }

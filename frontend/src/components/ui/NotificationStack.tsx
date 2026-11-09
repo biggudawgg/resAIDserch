@@ -399,7 +399,7 @@ export function NotificationStack({
             <button aria-expanded={expanded} className="nstack-link" onClick={() => setPinned((prev) => !prev)} type="button">
               {expanded ? 'Show less' : 'Show all'}
             </button>
-            <button className="nstack-link" onClick={() => laidOut.forEach((item, i) => window.setTimeout(() => dismiss(item.id, 1), i * 60))} type="button">
+            <button className="nstack-link" onClick={() => laidOut.forEach((item, i) => timers.current.push(window.setTimeout(() => dismiss(item.id, 1), i * 60)))} type="button">
               Clear
             </button>
           </span>
