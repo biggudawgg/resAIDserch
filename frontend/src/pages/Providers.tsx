@@ -1,14 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, Table2 } from 'lucide-react'
 import { api } from '../api/client'
 import { useApiMutation, useProviders, useRouting, useTasks, useUsage } from '../api/hooks'
 import type { Priority, Provider, ProviderId, Routing, TaskLog, Usage } from '../api/types'
-import { ColumnChart, type ColumnDatum } from '../components/charts/ColumnChart'
 import { ProviderHealth } from '../components/charts/ProviderHealth'
-import { SpendBreakdown } from '../components/charts/SpendBreakdown'
+import { SpendTrend } from '../components/charts/SpendTrend'
 import { Badge } from '../components/ui/Badge'
-import { Button } from '../components/ui/Button'
 import { Card } from '../components/ui/Card'
 import { Segmented, Select, Switch } from '../components/ui/Field'
 import { PageHeader } from '../components/ui/PageHeader'
@@ -17,7 +14,7 @@ import { EmptyState, ErrorState, SkeletonCard } from '../components/ui/States'
 import { StatTile } from '../components/ui/StatTile'
 import { ProviderStatusBadge } from '../components/ui/StatusBadges'
 import { cx } from '../lib/cx'
-import { compact, formatDateTime, formatDuration, formatNumber, formatShortDate, formatUsd, formatUsdPrecise, plural } from '../lib/format'
+import { compact, formatDateTime, formatDuration, formatNumber, formatUsd, formatUsdPrecise, plural } from '../lib/format'
 import { PRIORITY_META, PROVIDER_ORDER, providerLabel } from '../lib/providers'
 import { useUI } from '../lib/ui'
 
@@ -256,34 +253,6 @@ function RoutingCard({ routing, providers }: { routing: Routing; providers: Prov
 }
 
 function UsagePanel({ usage, refreshing }: { usage: Usage; refreshing: boolean }) {
-  const [showTable, setShowTable] = useState(false)
-  const today = new Date().toISOString().slice(0, 10)
-  const chartData: ColumnDatum[] = usage.daily.map((day) => {
-    const parts = PROVIDER_ORDER.filter((p) => day.byProvider[p] > 0)
-    return {
-      key: day.date,
-      label: formatShortDate(day.date),
-      value: day.costUsd,
-      current: day.date === today,
-      ariaLabel: `${formatShortDate(day.date)}: ${formatUsdPrecise(day.costUsd)}, ${plural(day.calls, 'call')}`,
-      tooltip: (
-        <>
-          <strong className="tt-value">{formatUsdPrecise(day.costUsd)}</strong>
-          <span className="tt-label">
-            {formatShortDate(day.date)} · {plural(day.calls, 'call')}
-          </span>
-          {parts.map((p) => (
-            <span key={p} className="tt-row">
-              <span className={cx('tt-key', `bg-${p}`)} aria-hidden />
-              <span>{providerLabel(p)}</span>
-              <span className="tt-row-value">{formatUsdPrecise(day.byProvider[p])}</span>
-            </span>
-          ))}
-        </>
-      ),
-    }
-  })
-
   return (
     <div className={cx('usage-body', refreshing && 'is-refreshing')}>
       <div className="kpi-grid">
@@ -295,53 +264,10 @@ function UsagePanel({ usage, refreshing }: { usage: Usage; refreshing: boolean }
       <div className="usage-grid">
         <Card
           className="usage-chart-card"
-          title="Daily spend"
-          description="All providers, per day. Hover a day for the split."
-          actions={
-            <Button size="sm" variant="ghost" icon={showTable ? <BarChart3 /> : <Table2 />} onClick={() => setShowTable((v) => !v)}>
-              {showTable ? 'Show chart' : 'Show table'}
-            </Button>
-          }
+          title="Spend over time"
+          description="Per provider, against the period before. Hover or drag across the chart to read days; pick a provider to chart it alone."
         >
-          {usage.totals.costUsd === 0 ? (
-            <EmptyState compact title="No paid usage in this range" description="Groq's free tier and demo heuristics cost nothing." />
-          ) : showTable ? (
-            <div className="table-wrap table-scroll">
-              <table className="table table-compact">
-                <thead>
-                  <tr>
-                    <th scope="col">Day</th>
-                    {PROVIDER_ORDER.slice(0, 3).map((p) => (
-                      <th key={p} scope="col" className="num">
-                        {providerLabel(p)}
-                      </th>
-                    ))}
-                    <th scope="col" className="num">
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[...usage.daily].reverse().map((day) => (
-                    <tr key={day.date}>
-                      <td>{formatShortDate(day.date)}</td>
-                      {PROVIDER_ORDER.slice(0, 3).map((p) => (
-                        <td key={p} className="num">
-                          {formatUsdPrecise(day.byProvider[p])}
-                        </td>
-                      ))}
-                      <td className="num strong">{formatUsdPrecise(day.costUsd)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <ColumnChart data={chartData} formatTick={(v) => `$${v.toFixed(2)}`} ariaLabel={`Daily spend over the last ${usage.days} days`} />
-          )}
-        </Card>
-        <Card title="Spend by provider" description={`Last ${usage.days} days`}>
-          <SpendBreakdown items={usage.byProvider} />
+          <SpendTrend />
         </Card>
         <Card title="Spend by task" description="Where the money goes" flush>
           <div className="table-wrap">

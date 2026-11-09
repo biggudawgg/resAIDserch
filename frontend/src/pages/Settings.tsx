@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useState, type CSSProperties, type FormEvent } from 'react'
 import { Link, NavLink, useLocation, useParams } from 'react-router-dom'
-import { ArrowRight, Building2, CheckCircle2, Download, Eye, EyeOff, KeyRound, PlugZap, ShieldCheck, Trash2, UserPlus, Users, Wallet, XCircle } from 'lucide-react'
+import { ArrowRight, Building2, CheckCircle2, Download, FileText, Eye, EyeOff, KeyRound, PlugZap, ShieldCheck, Trash2, UserPlus, Users, Wallet, XCircle } from 'lucide-react'
 import { api } from '../api/client'
 import { useApiMutation, useProviders, useWorkspace } from '../api/hooks'
 import type { Member, Provider, Role, Workspace } from '../api/types'
@@ -18,6 +18,8 @@ import { cx } from '../lib/cx'
 import { formatDate, timeAgo } from '../lib/format'
 import { useUI } from '../lib/ui'
 import { NotFound } from './NotFound'
+import { CountStepper } from '../components/ui/CountStepper'
+import { AvatarPicker } from '../components/settings/AvatarPicker'
 
 const TABS = [
   { id: 'general', label: 'General', icon: Building2 },
@@ -80,6 +82,7 @@ function useSaveSettings() {
 }
 
 function General({ ws }: { ws: Workspace }) {
+  const me = ws.members.find((m) => m.id === ws.currentUserId)
   const [teamName, setTeamName] = useState(ws.team.name)
   const [projectName, setProjectName] = useState(ws.team.projectName)
   const [endDate, setEndDate] = useState(ws.team.projectEndDate ?? '')
@@ -91,24 +94,31 @@ function General({ ws }: { ws: Workspace }) {
   }
 
   return (
-    <Card title="Workspace" description="Shown in the sidebar and on exported briefings.">
-      <form className="form form-narrow" onSubmit={submit}>
-        <Field label="Team name" htmlFor="team-name">
-          <Input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} required maxLength={120} />
-        </Field>
-        <Field label="Project" htmlFor="project-name">
-          <Input id="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} maxLength={160} />
-        </Field>
-        <Field label="Project end date" htmlFor="project-end" hint={`All team data is deleted ${ws.settings.retentionMonths} months after this date.`}>
-          <Input id="project-end" type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
-        </Field>
-        <div className="form-actions">
-          <Button variant="primary" type="submit" loading={save.pending}>
-            Save changes
-          </Button>
-        </div>
-      </form>
-    </Card>
+    <>
+      <Card title="Workspace" description="Shown in the sidebar and on exported briefings.">
+        <form className="form form-narrow" onSubmit={submit}>
+          <Field label="Team name" htmlFor="team-name">
+            <Input id="team-name" value={teamName} onChange={(event) => setTeamName(event.target.value)} required maxLength={120} />
+          </Field>
+          <Field label="Project" htmlFor="project-name">
+            <Input id="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} maxLength={160} />
+          </Field>
+          <Field label="Project end date" htmlFor="project-end" hint={`All team data is deleted ${ws.settings.retentionMonths} months after this date.`}>
+            <Input id="project-end" type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
+          </Field>
+          <div className="form-actions">
+            <Button variant="primary" type="submit" loading={save.pending}>
+              Save changes
+            </Button>
+          </div>
+        </form>
+      </Card>
+      {me && (
+        <Card title="Your avatar" description="A face drawn from your name. Drag or tap the coin to spin it, or shuffle. Saved in this browser.">
+          <AvatarPicker displayName={me.name} />
+        </Card>
+      )}
+    </>
   )
 }
 
@@ -439,6 +449,17 @@ function DataRetention({ ws }: { ws: Workspace }) {
   )
 }
 
+const PAPER_TONES = ['var(--cat-1)', 'var(--cat-2)', 'var(--cat-4)', 'var(--cat-5)', 'var(--cat-6)', 'var(--cat-3)']
+
+/** A tiny paper sheet in one of the categorical colours, for the papers-per-run stepper. */
+function PaperToken({ index }: { index: number }) {
+  return (
+    <span className="paper-token" style={{ '--tone': PAPER_TONES[index % PAPER_TONES.length] } as CSSProperties}>
+      <FileText aria-hidden />
+    </span>
+  )
+}
+
 function BudgetResearch({ ws }: { ws: Workspace }) {
   const [budget, setBudget] = useState(String(ws.settings.monthlyBudgetUsd))
   const [threshold, setThreshold] = useState(String(ws.settings.alertThreshold))
@@ -468,9 +489,18 @@ function BudgetResearch({ ws }: { ws: Workspace }) {
               </Select>
             </Field>
           </div>
-          <Field label="Papers per research run" htmlFor="max-papers" hint="How many arXiv results each run screens. More papers, more cost.">
-            <Input id="max-papers" type="number" min={3} max={50} value={maxPapers} onChange={(event) => setMaxPapers(event.target.value)} />
-          </Field>
+          <CountStepper
+            className="cstep-inline"
+            hint="How many arXiv results each run screens. More papers, more cost. Drag the number sideways to scrub."
+            label="Papers per research run"
+            max={50}
+            min={3}
+            onChange={(v) => setMaxPapers(String(v))}
+            renderToken={(i) => <PaperToken index={i} />}
+            tokenTitle={(i) => `Paper ${i + 1}`}
+            unit={['paper', 'papers']}
+            value={Number(maxPapers) || 12}
+          />
           <div className="form-actions">
             <Button variant="primary" type="submit" loading={save.pending}>
               Save changes

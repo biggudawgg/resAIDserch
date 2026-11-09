@@ -1,9 +1,14 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 
 type Theme = 'light' | 'dark'
+/** What the viewer picked: a fixed theme, or follow the OS. */
+export type ThemeMode = Theme | 'system'
 
 interface ThemeContextValue {
+  /** The theme in effect right now. */
   theme: Theme
+  mode: ThemeMode
+  setMode: (mode: ThemeMode) => void
   toggle: () => void
 }
 
@@ -37,20 +42,24 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    // Always set, so CSS keyed on [data-theme] matches what React thinks is active.
     document.documentElement.dataset.theme = theme
   }, [theme])
 
-  const toggle = useCallback(() => {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark'
+  const setMode = useCallback((mode: ThemeMode) => {
+    const next = mode === 'system' ? null : mode
     setExplicit(next)
     try {
-      localStorage.setItem(STORAGE_KEY, next)
+      if (next) localStorage.setItem(STORAGE_KEY, next)
+      else localStorage.removeItem(STORAGE_KEY)
     } catch {
       /* storage unavailable: the choice lasts for this session only */
     }
-  }, [theme])
+  }, [])
 
-  const value = useMemo(() => ({ theme, toggle }), [theme, toggle])
+  const toggle = useCallback(() => setMode(theme === 'dark' ? 'light' : 'dark'), [theme, setMode])
+
+  const value = useMemo<ThemeContextValue>(() => ({ theme, mode: explicit ?? 'system', setMode, toggle }), [theme, explicit, setMode, toggle])
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 

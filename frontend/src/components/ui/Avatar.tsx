@@ -1,5 +1,7 @@
 import { cx } from '../../lib/cx'
 import { initials } from '../../lib/format'
+import { FaceArt } from './Face'
+import { createFace } from '../../lib/faces'
 
 function hash(text: string): number {
   let h = 0
@@ -7,11 +9,29 @@ function hash(text: string): number {
   return h
 }
 
-export function Avatar({ name, size = 'md', agent = false }: { name: string; size?: 'xs' | 'sm' | 'md' | 'lg'; agent?: boolean }) {
+export function Avatar({
+  name,
+  size = 'md',
+  agent = false,
+  faceSeed,
+}: {
+  name: string
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  agent?: boolean
+  /** Draw a generated face (lib/faces) instead of initials. */
+  faceSeed?: string
+}) {
   if (agent) {
     return (
       <span className={cx('avatar', `avatar-${size}`, 'avatar-agent')} title={name} aria-hidden>
         R
+      </span>
+    )
+  }
+  if (faceSeed) {
+    return (
+      <span className={cx('avatar', `avatar-${size}`, 'avatar-face')} title={name} aria-hidden>
+        <FaceArt face={createFace(faceSeed)} />
       </span>
     )
   }

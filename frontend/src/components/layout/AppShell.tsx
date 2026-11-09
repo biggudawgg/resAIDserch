@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { RefreshCw, ServerCrash } from 'lucide-react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useWorkspace } from '../../api/hooks'
 import { warmAllRoutes } from '../../api/prefetch'
 import { cx } from '../../lib/cx'
-import { useHotkey } from '../../lib/hooks'
+import { useGoShortcuts, useHotkey } from '../../lib/hooks'
 import { useUI } from '../../lib/ui'
 import { ErrorBoundary } from '../ErrorBoundary'
 import { PaperDrawer } from '../papers/PaperDrawer'
@@ -18,10 +18,14 @@ import { RouteLoader } from './RouteLoader'
 import { Sidebar } from './Sidebar'
 import { Topbar } from './Topbar'
 
+/** G then a letter jumps to a page; shown as hints in the command palette. */
+const GO_KEYS: Record<string, string> = { o: '/', r: '/research', b: '/beliefs', l: '/library', p: '/providers' }
+
 export function AppShell() {
   const [navOpen, setNavOpen] = useState(false)
   const [splashOpen, setSplashOpen] = useState(shouldShowDemoSplash)
   const location = useLocation()
+  const navigate = useNavigate()
   const { askOpen, closeAsk, paletteOpen, openPalette, closePalette } = useUI()
   const workspace = useWorkspace()
   const queryClient = useQueryClient()
@@ -37,6 +41,13 @@ export function AppShell() {
     window.scrollTo(0, 0)
   }, [location.pathname])
   useHotkey('k', useCallback(() => openPalette(), [openPalette]), { meta: true })
+  useGoShortcuts(GO_KEYS, navigate)
+  // The command palette's "About this demo" asks for the splash without knowing where it lives.
+  useEffect(() => {
+    const open = () => setSplashOpen(true)
+    window.addEventListener('resaidserch:demo-info', open)
+    return () => window.removeEventListener('resaidserch:demo-info', open)
+  }, [])
 
   return (
     <div className={cx('app', navOpen && 'nav-open')}>

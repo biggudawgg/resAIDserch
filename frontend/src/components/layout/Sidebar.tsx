@@ -1,19 +1,17 @@
 import { Link, NavLink } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import { prefetchRoute } from '../../api/prefetch'
-import { useMemberName, useOverview, useWorkspace } from '../../api/hooks'
+import { useOverview, useWorkspace } from '../../api/hooks'
 import { cx } from '../../lib/cx'
-import { Avatar } from '../ui/Avatar'
 import { PRIMARY_NAV, SYSTEM_NAV, type NavItem } from './nav'
+import { ProfileMenu } from './ProfileMenu'
 import { Wordmark } from './Wordmark'
 
-const ROLE_TEXT = { lead: 'Lead', researcher: 'Researcher', engineer: 'Engineer', viewer: 'Viewer' }
 
 export function Sidebar() {
   const workspace = useWorkspace()
   const overview = useOverview()
   const queryClient = useQueryClient()
-  const nameOf = useMemberName()
   const ws = workspace.data
   const stats = overview.data?.stats
   const me = ws?.members.find((m) => m.id === ws.currentUserId)
@@ -70,15 +68,7 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar-foot">
-        {me && (
-          <div className="user-row">
-            <Avatar name={nameOf(me.id)} size="sm" />
-            <span className="user-text">
-              <span className="user-name">{me.name}</span>
-              <span className="user-role">{ROLE_TEXT[me.role]}</span>
-            </span>
-          </div>
-        )}
+        {me && ws && <ProfileMenu me={me} members={ws.members} />}
       </div>
     </aside>
   )

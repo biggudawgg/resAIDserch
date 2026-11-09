@@ -8,6 +8,7 @@ import {
 } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { cx } from '../../lib/cx'
+import { SmoothTabs } from './SmoothTabs'
 
 export function Field({
   label,
@@ -133,6 +134,7 @@ export function Segmented<T extends string>({
   )
 }
 
+/** Filter tabs with a sliding pill (KokonutUI smooth tabs, see SmoothTabs.tsx). */
 export function FilterTabs<T extends string>({
   items,
   value,
@@ -144,20 +146,5 @@ export function FilterTabs<T extends string>({
   onChange: (value: T) => void
   label: string
 }) {
-  return (
-    <div className="filter-tabs" role="group" aria-label={label}>
-      {items.map((item) => (
-        <button
-          key={item.value}
-          type="button"
-          aria-pressed={item.value === value}
-          className={cx('filter-tab', item.value === value && 'is-active')}
-          onClick={() => onChange(item.value)}
-        >
-          {item.label}
-          {item.count !== undefined && <span className="filter-count">{item.count}</span>}
-        </button>
-      ))}
-    </div>
-  )
+  return <SmoothTabs items={items} label={label} onChange={onChange} value={value} />
 }
